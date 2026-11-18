@@ -14,8 +14,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Clone the three public repos
         run: |
-          git clone --depth 1 https://github.com/fazeljangjoo/Pesteh-Bazar/tree/v-4
-          git clone --depth 1 https://github.com/fazeljangjoo/pesteh-bazar-gold/tree/v-4
+          git clone --depth 1 https://github.com/fazeljangjoo/Pesteh-Bazar/tree/v-4     src/android
+          git clone --depth 1 https://github.com/fazeljangjoo/pesteh-bazar-gold/tree/v-4     src/windows
           git clone --depth 1 https://github.com/fazeljangjoo/pesteh-web     src/web
       - run: python analyze.py --android src/android --windows src/windows --web src/web --infra infra.json -o docs/graph.json
       - name: Commit if changed
