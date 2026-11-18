@@ -29,6 +29,29 @@ def files(root, exts):
             yield p, rel[1:]
 
 
+def doc_of(txt):
+    """توضیح داخل خود فایل: کامنت سرفایل، یا ///کامنت اولین کلاس (Dart)."""
+    head = txt[:3000]
+    m = re.search(r'/\*\*?(.*?)\*/', head, re.S)
+    if m and m.start() < 600:
+        t = m.group(1)
+    else:
+        lines = [l.strip() for l in head.split('\n')[:60]]
+        c = []
+        for l in lines:
+            if l.startswith('//'): c.append(l.lstrip('/').strip())
+            elif c: break
+            elif l and not l.startswith(('<?php', 'declare', '#!', 'import', 'library', "'use ")): 
+                if not l.startswith(('//', '/*')): continue
+        t = ' '.join(c)
+        if not t:
+            m = re.search(r'((?:^[ \t]*///.*\n)+)[ \t]*(?:abstract |final )?(?:class|mixin|enum|extension)\b', txt, re.M)
+            t = ' '.join(x.strip().lstrip('/').strip() for x in m.group(1).split('\n')) if m else ''
+    t = re.sub(r'^\s*\*+ ?', '', t, flags=re.M)
+    t = re.sub(r'\s+', ' ', t).strip(' *-')
+    return t[:260] if len(t) > 12 else ''
+
+
 def area(name):
     return re.sub(r'\.(dart|php|js)$', '', os.path.basename(name)).split('_')[0]
 
@@ -118,6 +141,10 @@ def main():
         for l in inf['links']:
             s, t = (x if ':' in x else f'infra:{x}' for x in (l['from'], l['to'])); edge(s, t, 'infra')
 
+    for i, n in nodes.items():
+        if i in texts: n['doc'] = doc_of(texts[i])
+        if i in texts: n.setdefault('hash', hashlib.md5(texts[i].encode('utf-8', 'ignore')).hexdigest()[:8])
+
     # ---- mark new nodes/edges compared with the previous graph.json
     now = int(time.time()); old_n, old_e = {}, {}
     if os.path.exists(a.o):
@@ -133,6 +160,16 @@ def main():
     out = {'generated': now, 'nodes': list(nodes.values()), 'links': list(edges.values())}
     os.makedirs(os.path.dirname(os.path.abspath(a.o)), exist_ok=True)
     json.dump(out, open(a.o, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    # ---- history (for growth charts): one point per run when counts change
+    hp = os.path.join(os.path.dirname(os.path.abspath(a.o)), 'history.json')
+    hist = json.load(open(hp, encoding='utf-8')) if os.path.exists(hp) else []
+    pt = {'t': now, 'nodes': {}, 'lines': {}, 'edges': len(edges)}
+    for n in nodes.values():
+        pt['nodes'][n['group']] = pt['nodes'].get(n['group'], 0) + 1
+        pt['lines'][n['group']] = pt['lines'].get(n['group'], 0) + n.get('lines', 0)
+    if not hist or {k: v for k, v in hist[-1].items() if k != 't'} != {k: v for k, v in pt.items() if k != 't'}:
+        hist.append(pt)
+    json.dump(hist[-500:], open(hp, 'w'), separators=(',', ':'))
     print(f'{len(nodes)} nodes, {len(edges)} edges -> {a.o}')
 
 
