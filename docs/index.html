@@ -11,30 +11,37 @@
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--fg);font:14px/1.5 Tahoma,"Segoe UI",sans-serif;display:flex;flex-direction:column}
 header{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
-header b{font-size:16px}
+#groups{display:flex;flex-wrap:wrap;gap:4px 12px}header b{font-size:16px}.btn{background:var(--new);color:#111;border-radius:6px;padding:3px 10px;text-decoration:none;font-weight:bold}.hint{color:var(--mut);font-size:12px}
 label{display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
 .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
 input[type=search]{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:5px 9px;width:170px}
 #stat{margin-inline-start:auto;color:var(--mut)}
 main{flex:1;position:relative;min-height:0}
 svg{width:100%;height:100%;display:block}
-#info{position:absolute;inset-inline-start:12px;bottom:12px;max-width:340px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:none}
+#info{position:absolute;inset-inline-start:12px;bottom:12px;width:min(400px,92vw);max-height:78%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:none;line-height:1.8}
+#info h3{margin:0 0 2px;font-size:16px}#info .x{position:absolute;inset-inline-end:8px;top:6px;background:none;border:0;color:var(--mut);font-size:18px;cursor:pointer}
+#info .tag{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:10px;padding:0 7px;margin-inline-start:6px}
+#info .what{background:var(--bg);border-radius:8px;padding:8px 10px;margin:8px 0}#info .en{direction:ltr;text-align:left;color:var(--mut);font-size:12px}
+#info ul{margin:4px 0 8px;padding-inline-start:18px}#info li{margin:2px 0}
+.chip{display:inline-block;margin:2px 3px 2px 0;padding:0 8px;border:1px solid var(--line);border-radius:12px;background:none;color:var(--fg);font:inherit;font-size:12px;cursor:pointer}.chip:hover{border-color:var(--new)}
 #info small{color:var(--mut);direction:ltr;display:block}
+#hs{display:flex;gap:10px;align-items:center}.hd{width:9px;height:9px;border-radius:50%;display:inline-block;margin-inline-end:4px}
 #news{position:absolute;inset-inline-end:12px;top:12px;max-width:300px;background:var(--panel);border:1px solid var(--new);border-radius:8px;padding:8px 12px;display:none}
-.new circle{stroke:var(--new);stroke-width:3}
+.new circle:first-child{stroke:var(--new);stroke-width:3}
 @keyframes p{50%{stroke-width:7;stroke-opacity:.4}}
-.new circle{animation:p 1.6s 6}
-@media (prefers-reduced-motion:reduce){.new circle{animation:none}}
+.new circle:first-child{animation:p 1.6s 6}
+@media (prefers-reduced-motion:reduce){.new circle:first-child{animation:none}}
 text{fill:var(--fg);font-size:10px;pointer-events:none;paint-order:stroke;stroke:var(--bg);stroke-width:3px}
 </style>
 </head>
 <body>
 <header>
-  <b>نقشه‌ی اتصال پروژه</b>
+  <b>نقشه‌ی اتصال پروژه</b> <small class="hint">v5</small> <a class="btn" href="stats.html?v=5">📊 تحلیل و نمودارها</a> <span class="hint">روی هر دایره کلیک کن تا توضیح فارسی ببینی</span>
   <span id="groups"></span>
   <label><input type="checkbox" id="sql"> جدول‌های دیتابیس</label>
   <label><input type="checkbox" id="req" checked> require در بک‌اند</label>
   <input type="search" id="q" placeholder="جستجوی فایل…">
+  <span id="hs"></span>
   <span id="stat"></span>
 </header>
 <main>
@@ -47,6 +54,11 @@ const COLORS={android:'#3ddc84',windows:'#4aa3ff',web:'#ff9f43',backend:'#b388ff
 const NAMES={android:'اندروید',windows:'ویندوز',web:'وب',backend:'بک‌اند',admin:'ادمین',db:'دیتابیس',infra:'سرور/هاست'};
 const KIND={import:'#5b6678',require:'#7a5fb8',api:'#ff9f43',sql:'#3a4558','shared-same':'#2a6a4a','shared-diff':'#d9534f',infra:'#ffd23f'};
 const NEW_DAYS=7, REFRESH_MS=60000;
+const HEALTH_URL='https://pesteh-bazar.ir/backend/api/health.php', HEALTH_MS=30000;
+// کلید: شناسه‌ی گره در infra.json ← کلید داخل checks (host = در دسترس بودن خود سرور)
+const HEALTH_MAP={'infra:host':'host','infra:mysql':'db','infra:sms':'sms','infra:ai':'ai'};
+let status={}, lastOk=null, DESC={}, curNodes=[], curLinks=[], curN=null, curL=null;
+fetch('descriptions.json').then(r=>r.json()).then(j=>DESC=j).catch(()=>{});
 const on=new Set(['android','windows','web','backend','admin','infra']);
 let data=null, sim=null, sel=null;
 const svg=d3.select('#svg'), root=svg.append('g'), gl=root.append('g'), gn=root.append('g');
@@ -69,7 +81,8 @@ function draw(){
   const showSql=document.getElementById('sql').checked, showReq=document.getElementById('req').checked;
   const q=document.getElementById('q').value.trim().toLowerCase(), cut=Date.now()/1000-NEW_DAYS*86400;
   const gOn=g=>on.has(g)||(g==='db'&&showSql);
-  const nodes=data.nodes.filter(n=>gOn(n.group)).map(n=>({...n}));
+  const prev=new Map(curNodes.map(n=>[n.id,n]));
+  const nodes=data.nodes.filter(n=>gOn(n.group)).map(n=>{const o=prev.get(n.id);return o?{...n,x:o.x,y:o.y}:{...n}});
   const ids=new Set(nodes.map(n=>n.id));
   const links=data.links.filter(l=>ids.has(l.source)&&ids.has(l.target)&&(showReq||l.kind!=='require')).map(l=>({...l}));
   const isNew=o=>o.added&&o.added>cut;
@@ -79,17 +92,20 @@ function draw(){
   const L=gl.selectAll('line').data(links,d=>d.source+d.target+d.kind).join('line')
     .attr('stroke',d=>isNew(d)?'var(--new)':KIND[d.kind]).attr('stroke-opacity',d=>isNew(d)?1:.45)
     .attr('stroke-width',d=>isNew(d)?2.5:Math.min(3,.6+d.w*.3)).attr('stroke-dasharray',d=>d.kind==='shared-diff'?'4 3':null);
-  const N=gn.selectAll('g').data(nodes,d=>d.id).join(e=>{const g=e.append('g');g.append('circle');g.append('text').attr('dy',-8).attr('text-anchor','middle');return g})
+  const N=gn.selectAll('g').data(nodes,d=>d.id).join(e=>{const g=e.append('g');g.append('circle');g.append('circle').attr('class','hit').attr('fill','transparent');g.append('text').attr('dy',-8).attr('text-anchor','middle');return g})
     .attr('class',d=>isNew(d)?'new':'').style('cursor','pointer')
     .on('click',(e,d)=>show(d,links)).call(d3.drag().on('start',(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y})
       .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y}).on('end',(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=d.fy=null}));
-  N.select('circle').attr('r',r).attr('fill',d=>COLORS[d.group])
-    .attr('stroke',d=>d.shared==='diff'?'#d9534f':'var(--bg)').attr('stroke-width',d=>d.shared==='diff'?2:1)
+  N.select('circle').attr('r',d=>HEALTH_MAP[d.id]?r(d)+5:r(d)).attr('fill',d=>COLORS[d.group])
+    .attr('stroke',d=>status[d.id]?SC[status[d.id].s]:d.shared==='diff'?'#d9534f':'var(--bg)')
+    .attr('stroke-width',d=>status[d.id]?4:d.shared==='diff'?2:1)
     .attr('opacity',d=>!q||d.label.toLowerCase().includes(q)?1:.12);
-  N.select('text').text(d=>(deg[d.id]>12||isNew(d)||(q&&d.label.toLowerCase().includes(q)))?d.label:'');
+  N.select('circle.hit').attr('r',d=>r(d)+8);
+  N.select('text').text(d=>HEALTH_MAP[d.id]?d.label+(status[d.id]&&status[d.id].ms!=null?` (${status[d.id].ms}ms)`:''):(deg[d.id]>12||isNew(d)||(q&&d.label.toLowerCase().includes(q)))?d.label:'');
 
+  curNodes=nodes;curLinks=links;curN=N;curL=L;
   if(sim)sim.stop();
-  sim=d3.forceSimulation(nodes).force('link',d3.forceLink(links).id(d=>d.id).distance(40).strength(.25))
+  sim=d3.forceSimulation(nodes).alpha(prev.size?.25:1).force('link',d3.forceLink(links).id(d=>d.id).distance(40).strength(.25))
     .force('charge',d3.forceManyBody().strength(-60)).force('collide',d3.forceCollide(8))
     .force('x',d3.forceX(innerWidth/2).strength(.04)).force('y',d3.forceY(innerHeight/2).strength(.04))
     .on('tick',()=>{L.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
@@ -102,15 +118,69 @@ function draw(){
   document.getElementById('stat').textContent=`${nodes.length} بخش · ${links.length} اتصال · به‌روزرسانی ${new Date(data.generated*1000).toLocaleString('fa-IR')}`;
 }
 
-function show(d,links){
-  const out=links.filter(l=>l.source.id===d.id).map(l=>l.target.label), inn=links.filter(l=>l.target.id===d.id).map(l=>l.source.label);
-  const i=document.getElementById('info'); i.style.display='block';
-  i.innerHTML=`<b>${d.label}</b> (${NAMES[d.group]})<small>${d.path||d.host||''}</small>
-   ${d.shared?`<div>در دو نسخه: ${d.shared==='same'?'یکسان':'<span style="color:#d9534f">متفاوت</span>'}</div>`:''}
-   <div>به این وصل است (${out.length}): ${out.slice(0,10).join('، ')}${out.length>10?'…':''}</div>
-   <div>این را صدا می‌زنند (${inn.length}): ${inn.slice(0,10).join('، ')}${inn.length>10?'…':''}</div>`;
+const SC={up:'#2ecc71',down:'#ff4d4f',unknown:'#8a94a6'};
+async function pollHealth(){
+  let h=null, t=performance.now();
+  try{const r=await fetch(HEALTH_URL,{cache:'no-store'}); if(r.ok)h=await r.json();}catch(e){}
+  const ms=Math.round(performance.now()-t), st={};
+  for(const [id,k] of Object.entries(HEALTH_MAP)){
+    if(!h) st[id]={s:k==='host'?'down':'unknown'};
+    else if(k==='host') st[id]={s:'up',ms};
+    else st[id]={s:h.checks[k]?.ok?'up':'down',ms:h.checks[k]?.ms??null};
+  }
+  const was=JSON.stringify(Object.values(status).map(x=>x.s)); status=st;
+  if(h)lastOk=Date.now();
+  const bad=Object.entries(st).filter(([,v])=>v.s==='down').map(([id])=>id.split(':')[1]);
+  document.getElementById('hs').innerHTML=bad.length
+    ?`<span class="hd" style="background:${SC.down}"></span>مشکل: ${bad.join('، ')}`
+    :h?`<span class="hd" style="background:${SC.up}"></span>همه‌ی سرویس‌ها سالم`:`<span class="hd" style="background:${SC.unknown}"></span>وضعیت نامشخص`;
+  document.title=(bad.length?'⚠ ':'')+'نقشه‌ی پسته‌بازار';
+  applyStatus();
 }
-load(); setInterval(load,REFRESH_MS);
+const GN={android:'اپ اندروید',windows:'اپ ویندوز',web:'نسخه‌ی وب',backend:'بک‌اند (سرور PHP)',admin:'پنل ادمین',db:'جدول دیتابیس',infra:'زیرساخت'};
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fa=t=>/[\u0600-\u06FF]/.test(t||'');
+function facts(d,ls){
+  const o=ls.filter(l=>l.source.id===d.id), i=ls.filter(l=>l.target.id===d.id), f=[];
+  const u=a=>[...new Set(a)], L=(a,n=6)=>u(a).slice(0,n).join('، ')+(u(a).length>n?' و …':'');
+  const K=(a,k,side)=>a.filter(l=>l.kind===k).map(l=>l[side].label);
+  f.push(`بخشی از ${GN[d.group]}${d.lines?` · ${d.lines} خط کد`:''}`);
+  const imO=K(o,'import','target'), imI=K(i,'import','source');
+  if(imO.length)f.push(`از ${u(imO).length} فایل دیگر کمک می‌گیرد: ${L(imO)}`);
+  if(imI.length)f.push(`${u(imI).length} فایل از آن استفاده می‌کنند${u(imI).length>=10?' — تغییر در این فایل روی بخش‌های زیادی اثر می‌گذارد':''}`);
+  const apO=K(o,'api','target'); if(apO.length)f.push(`با سرور حرف می‌زند و به این فایل‌های بک‌اند وصل است: ${L(apO)}`);
+  const apI=i.filter(l=>l.kind==='api'); if(apI.length)f.push(`از این بخش‌ها صدا زده می‌شود: ${u(apI.map(l=>GN[l.source.group]||l.source.group)).join('، ')} (${u(apI.map(l=>l.source.label)).length} فایل)`);
+  const sq=K(o,'sql','target'); if(sq.length)f.push(`با این جدول‌های دیتابیس کار می‌کند: ${L(sq,8)}`);
+  const sqI=K(i,'sql','source'); if(d.group==='db')f.push(`${u(sqI).length} فایل بک‌اند این جدول را می‌خوانند یا می‌نویسند${u(sqI).length>=20?' — تغییر ساختارش پرخطر است':''}`);
+  const rq=K(o,'require','target'); if(rq.length)f.push(`این فایل‌های بک‌اند را به کار می‌گیرد: ${L(rq)}`);
+  const rqI=K(i,'require','source'); if(rqI.length)f.push(`${u(rqI).length} فایل بک‌اند آن را به کار می‌گیرند`);
+  const inf=o.filter(l=>l.kind==='infra').map(l=>l.target.label); if(inf.length)f.push(`به این سرویس‌ها وصل است: ${L(inf)}`);
+  if(d.shared==='same')f.push('در نسخه‌ی اندروید و ویندوز یکسان است (کد مشترک)');
+  if(d.shared==='diff')f.push('<b style="color:#d9534f">در اندروید و ویندوز با هم فرق دارد</b> — بهتر است بررسی شود');
+  if(d.group==='backend'&&!i.length)f.push('هیچ فایلی صدایش نمی‌زند؛ شاید cron یا وب‌هوک باشد، یا دیگر استفاده نمی‌شود');
+  return f;
+}
+function selectNode(id){const n=curNodes.find(x=>x.id===id); if(n)show(n,curLinks)}
+function applyStatus(){
+  if(!curN)return;
+  curN.select('circle').attr('stroke',d=>status[d.id]?SC[status[d.id].s]:d.shared==='diff'?'#d9534f':'var(--bg)').attr('stroke-width',d=>status[d.id]?4:d.shared==='diff'?2:1);
+  curN.filter(d=>HEALTH_MAP[d.id]).select('text').text(d=>d.label+(status[d.id]&&status[d.id].ms!=null?` (${status[d.id].ms}ms)`:''));
+}
+function show(d,links){
+  const ds=DESC[d.hash]; let what='';
+  if(ds&&ds.fa)what=`<div class="what">${esc(ds.fa)}<span class="tag">توضیح هوش مصنوعی</span></div>`;
+  else if(fa(d.doc))what=`<div class="what">${esc(d.doc)}<span class="tag">کامنت داخل فایل</span></div>`;
+  else if(d.doc)what=`<div class="what"><span class="tag">توضیح فارسی هنوز ساخته نشده</span><div class="en">${esc(d.doc)}</div></div>`;
+  const near=[...new Set(links.filter(l=>l.source.id===d.id||l.target.id===d.id).map(l=>l.source.id===d.id?l.target:l.source))].slice(0,16);
+  const i=document.getElementById('info'); i.style.display='block';
+  i.innerHTML=`<button class="x" onclick="this.parentNode.style.display='none';curN.style('opacity',null);curL.style('opacity',null)">×</button>
+   <h3>${esc(d.label)}</h3><small class="en" style="display:block">${esc(d.path||d.host||'')}</small>${what}
+   <b>اتصال‌ها و نقش در پروژه</b><ul>${facts(d,links).map(x=>`<li>${x}</li>`).join('')}</ul>
+   ${near.length?'<b>همسایه‌ها (کلیک کن):</b><div>'+near.map(n=>`<button class="chip" onclick="selectNode('${n.id.replace(/'/g,"\\'")}')">${esc(n.label)}</button>`).join('')+'</div>':''}`;
+  const ids=new Set([d.id,...near.map(n=>n.id)]);
+  curN.style('opacity',n=>ids.has(n.id)?1:.12); curL.style('opacity',l=>(l.source.id===d.id||l.target.id===d.id)?1:.04);
+}
+load(); setInterval(load,REFRESH_MS); pollHealth(); setInterval(pollHealth,HEALTH_MS);
 </script>
 </body>
 </html>

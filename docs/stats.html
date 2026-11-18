@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تحلیل پروژه‌ی پسته‌بازار</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root{--bg:#14181f;--panel:#1c222c;--fg:#e8ebf0;--mut:#8a94a6;--line:#3a4558;--bad:#ff6b6b}
+@media (prefers-color-scheme:light){:root{--bg:#f4f5f7;--panel:#fff;--fg:#1b2230;--mut:#5b6678;--line:#b8c0cc;--bad:#d9534f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 Tahoma,"Segoe UI",sans-serif}
+header{display:flex;gap:16px;align-items:center;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+a{color:inherit}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:14px;padding:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.card h2{margin:0 0 2px;font-size:15px}.card p{margin:0 0 8px;color:var(--mut);font-size:12px}
+.kpi{display:flex;gap:10px;flex-wrap:wrap;grid-column:1/-1}.kpi div{flex:1;min-width:130px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.kpi b{display:block;font-size:24px}.kpi span{color:var(--mut);font-size:12px}.kpi .bad b{color:var(--bad)}
+svg text{fill:var(--fg);font-size:11px}svg .ax text{fill:var(--mut)}svg .ax path,svg .ax line{stroke:var(--line)}
+.empty{color:var(--mut);padding:20px 0}
+</style>
+</head>
+<body>
+<header><b>تحلیل دقیق پروژه</b><small style="color:var(--mut)">v5</small><a href="index.html?v=5">← بازگشت به نقشه</a><span id="when" style="margin-inline-start:auto;color:var(--mut)"></span></header>
+<main id="m"></main>
+<script>
+const C={android:'#3ddc84',windows:'#4aa3ff',web:'#ff9f43',backend:'#b388ff',admin:'#ff6b9d',db:'#8a94a6',infra:'#ffd23f'};
+const NM={android:'اندروید',windows:'ویندوز',web:'وب',backend:'بک‌اند',admin:'ادمین',db:'دیتابیس',infra:'زیرساخت'};
+const m=d3.select('#m');
+const card=(t,p)=>{const c=m.append('div').attr('class','card');c.append('h2').text(t);c.append('p').text(p);return c};
+
+function bars(c,items,fmt=d3.format(',')){
+  if(!items.length)return c.append('div').attr('class','empty').text('موردی نیست ✓');
+  const W=420,rowH=22,L=130,h=items.length*rowH+4,x=d3.scaleLinear([0,d3.max(items,d=>d.v)||1],[0,W-L-52]);
+  const s=c.append('svg').attr('viewBox',`0 0 ${W} ${h}`).attr('width','100%');
+  const g=s.selectAll('g').data(items).join('g').attr('transform',(d,i)=>`translate(0,${i*rowH})`);
+  g.append('title').text(d=>d.label+': '+fmt(d.v)+(d.tip?'\n'+d.tip:''));
+  g.append('text').attr('x',L-6).attr('y',14).attr('text-anchor','end').text(d=>d.label.length>20?d.label.slice(0,19)+'…':d.label);
+  g.append('rect').attr('x',L).attr('y',3).attr('height',15).attr('rx',3).attr('width',d=>Math.max(2,x(d.v))).attr('fill',d=>d.c||'#4aa3ff');
+  g.append('text').attr('x',d=>L+Math.max(2,x(d.v))+5).attr('y',14).text(d=>fmt(d.v));
+}
+
+function sccs(nodes,links,g){ // وابستگی چرخه‌ای (Tarjan) روی importهای هر ریپو
+  const adj={};links.filter(l=>l.kind==='import').forEach(l=>(adj[l.source]??=[]).push(l.target));
+  const idx={},low={},st=[],on=new Set(),out=[];let c=0;
+  const go=v=>{idx[v]=low[v]=c++;st.push(v);on.add(v);
+    for(const w of adj[v]||[]){if(!(w in idx)){go(w);low[v]=Math.min(low[v],low[w])}else if(on.has(w))low[v]=Math.min(low[v],idx[w])}
+    if(low[v]===idx[v]){const k=[];let w;do{w=st.pop();on.delete(w);k.push(w)}while(w!==v);if(k.length>1)out.push(k)}};
+  Object.keys(adj).filter(v=>v.startsWith(g+':')&&!(v in idx)).forEach(go);return out;
+}
+
+Promise.all([fetch('graph.json').then(r=>r.json()),fetch('history.json').then(r=>r.json()).catch(()=>[])]).then(([G,H])=>{
+  const N=Object.fromEntries(G.nodes.map(n=>[n.id,n])),L=G.links;
+  const inn={},deg={};L.forEach(l=>{inn[l.target]=(inn[l.target]||0)+1;deg[l.source]=(deg[l.source]||0)+1;deg[l.target]=(deg[l.target]||0)+1});
+  document.getElementById('when').textContent='داده: '+new Date(G.generated*1000).toLocaleString('fa-IR');
+  const groups=[...new Set(G.nodes.map(n=>n.group))].filter(g=>g!=='db'&&g!=='infra');
+  const lines=g=>d3.sum(G.nodes.filter(n=>n.group===g),n=>n.lines||0);
+  const diff=G.nodes.filter(n=>n.group==='android'&&n.shared==='diff');
+  const unused=G.nodes.filter(n=>n.group==='backend'&&!inn[n.id]);
+  const cyc=['android','windows'].flatMap(g=>sccs(G.nodes,L,g).map(k=>({g,k})));
+
+  m.append('div').attr('class','kpi').html(
+    [['بخش (فایل)',G.nodes.filter(n=>n.group!=='db'&&n.group!=='infra').length],['اتصال',L.length],['خط کد',d3.format(',')(d3.sum(groups,lines))],
+     ['فایل متفاوت بین ویندوز و اندروید',diff.length,'bad'],['فایل بک‌اند بدون مصرف‌کننده',unused.length,'bad'],['چرخه‌ی وابستگی',cyc.length,'bad']]
+    .map(([t,v,k])=>`<div class="${k||''}"><b>${v}</b><span>${t}</span></div>`).join(''));
+
+  let c=card('حجم کد هر بخش','تعداد خط کد');
+  bars(c,groups.map(g=>({label:NM[g],v:lines(g),c:C[g]})));
+
+  c=card('بزرگ‌ترین فایل‌ها','بیشترین خط کد؛ کاندید شکستن به فایل‌های کوچک‌تر');
+  bars(c,G.nodes.filter(n=>n.lines&&n.group!=='windows').sort((a,b)=>b.lines-a.lines).slice(0,12).map(n=>({label:n.label,v:n.lines,c:C[n.group],tip:n.path})));
+
+  c=card('پرارتباط‌ترین فایل‌ها (هاب)','تغییر در این‌ها روی بیشترین بخش‌ها اثر می‌گذارد');
+  bars(c,G.nodes.filter(n=>n.group!=='db'&&n.group!=='windows').sort((a,b)=>(deg[b.id]||0)-(deg[a.id]||0)).slice(0,12).map(n=>({label:n.label,v:deg[n.id]||0,c:C[n.group],tip:n.path})));
+
+  c=card('فایل‌های متفاوت ویندوز و اندروید','به تفکیک بخش (پیشوند نام فایل)؛ یعنی دو نسخه از هم دور شده‌اند');
+  const da=d3.rollups(diff,v=>v.length,n=>n.area).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  bars(c,da.map(([a,v])=>({label:a,v,c:'#ff6b6b'})));
+
+  c=card('پرمصرف‌ترین جدول‌های دیتابیس','تعداد فایل‌های PHP که به جدول دست می‌زنند؛ تغییر ساختار این‌ها پرخطر است');
+  bars(c,G.nodes.filter(n=>n.group==='db').sort((a,b)=>(inn[b.id]||0)-(inn[a.id]||0)).slice(0,12).map(n=>({label:n.label,v:inn[n.id]||0,c:C.db})));
+
+  c=card('بک‌اند: فایل‌های بدون مصرف‌کننده','هیچ فایل کدی صدایشان نمی‌زند. ممکن است cron یا وب‌هوک باشند؛ قبل از حذف بررسی کن');
+  bars(c,unused.sort((a,b)=>b.lines-a.lines).slice(0,15).map(n=>({label:n.label,v:n.lines,c:C.backend,tip:n.path})));
+
+  c=card('وابستگی چرخه‌ای در Flutter','فایل‌هایی که مستقیم یا غیرمستقیم به هم import دارند؛ تست و ریفکتور را سخت می‌کند');
+  bars(c,cyc.sort((a,b)=>b.k.length-a.k.length).slice(0,10).map(({g,k})=>({label:`${NM[g]}: ${N[k[0]].label}`,v:k.length,c:C[g],tip:k.map(i=>N[i].label).join('، ')})));
+
+  c=card('رشد پروژه در طول زمان','تعداد فایل هر بخش در هر اجرای تحلیل');
+  if(H.length<2){c.append('div').attr('class','empty').text('هنوز تاریخچه‌ای نیست؛ با هر تغییر پروژه یک نقطه اضافه می‌شود.')}
+  else{const W=420,Hh=200,x=d3.scaleTime(d3.extent(H,d=>d.t*1000),[40,W-10]),y=d3.scaleLinear([0,d3.max(H,d=>d3.max(groups,g=>d.nodes[g]||0))],[Hh-24,8]);
+    const s=c.append('svg').attr('viewBox',`0 0 ${W} ${Hh}`).attr('width','100%');
+    s.append('g').attr('class','ax').attr('transform',`translate(0,${Hh-24})`).call(d3.axisBottom(x).ticks(4));
+    s.append('g').attr('class','ax').attr('transform','translate(40,0)').call(d3.axisLeft(y).ticks(4));
+    groups.forEach(g=>s.append('path').attr('fill','none').attr('stroke',C[g]).attr('stroke-width',2)
+      .attr('d',d3.line().x(d=>x(d.t*1000)).y(d=>y(d.nodes[g]||0))(H)));
+    c.append('div').html(groups.map(g=>`<span style="color:${C[g]}">●</span> ${NM[g]}`).join(' &nbsp; '));}
+});
+</script>
+</body>
+</html>
