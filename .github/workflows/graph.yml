@@ -16,7 +16,7 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/fazeljangjoo/Pesteh-Bazar/tree/v-4
           git clone --depth 1 https://github.com/fazeljangjoo/pesteh-bazar-gold/tree/v-4
-          git clone --depth 1 https://github.com/YOUR_USER/WEB_REPO.git     src/web
+          git clone --depth 1 https://github.com/fazeljangjoo/pesteh-web     src/web
       - run: python analyze.py --android src/android --windows src/windows --web src/web --infra infra.json -o docs/graph.json
       - name: Commit if changed
         run: |
