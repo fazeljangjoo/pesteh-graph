@@ -10,17 +10,22 @@ permissions:
 jobs:
   graph:
     runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - name: Clone the three public repos
         run: |
-          git clone --depth 1 https://github.com/fazeljangjoo/Pesteh-Bazar.git     src/android
-          git clone --depth 1 https://github.com/fazeljangjoo/pesteh-bazar-gold.git     src/windows
-          git clone --depth 1 https://github.com/fazeljangjoo/pesteh-web.git     src/web
+          git clone --depth 1 --branch v-4 https://github.com/fazeljangjoo/Pesteh-Bazar.git src/android
+          git clone --depth 1 --branch v-4 https://github.com/fazeljangjoo/pesteh-bazar-gold.git src/windows
+          git clone --depth 1 https://github.com/fazeljangjoo/pesteh-web.git src/web
       - run: python analyze.py --android src/android --windows src/windows --web src/web --infra infra.json -o docs/graph.json
+      - name: Persian descriptions (only if ANTHROPIC_API_KEY secret is set)
+        if: env.ANTHROPIC_API_KEY != ''
+        run: python describe.py --android src/android --windows src/windows --web src/web --max 150
       - name: Commit if changed
         run: |
           git config user.name  "graph-bot"
           git config user.email "graph-bot@users.noreply.github.com"
-          git add docs/graph.json
+          git add docs/graph.json docs/history.json docs/descriptions.json 2>/dev/null || git add docs/graph.json docs/history.json
           git diff --cached --quiet || (git commit -m "update graph" && git push)
