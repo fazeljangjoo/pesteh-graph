@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نقشه‌ی قابلیت‌های پسته‌بازار</title>
+<style>
+:root{--bg:#14181f;--panel:#1c222c;--fg:#e8ebf0;--mut:#8a94a6;--line:#3a4558;--new:#ffd23f;--bad:#ff6b6b;--android:#3ddc84;--windows:#4aa3ff;--web:#ff9f43;--backend:#b388ff;--admin:#ff6b9d;--db:#8a94a6}
+@media (prefers-color-scheme:light){:root{--bg:#f4f5f7;--panel:#fff;--fg:#1b2230;--mut:#5b6678;--line:#b8c0cc;--new:#d98e00;--bad:#d9534f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.7 Tahoma,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+header b{font-size:16px}.hint{color:var(--mut);font-size:12px}
+.btn{background:var(--new);color:#111;border-radius:6px;padding:2px 10px;text-decoration:none;font-weight:bold;font-size:13px}
+input[type=search]{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:5px 9px;min-width:0;flex:1 1 170px;max-width:260px}
+label{display:flex;gap:5px;align-items:center;cursor:pointer;white-space:nowrap}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:12px;padding:14px}
+.card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.card:hover,.card:focus-visible{border-color:var(--new)}
+.card h3{margin:0;font-size:15px}.card small{color:var(--mut);direction:ltr;text-align:right;display:block;font-size:11px}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line)}.bar i{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:3px 9px;font-size:12px;color:var(--mut)}
+.tag{font-size:11px;border-radius:9px;padding:0 8px;border:1px solid}
+.t-new{color:var(--new);border-color:var(--new)}.t-bad{color:var(--bad);border-color:var(--bad)}.t-dep{color:var(--mut);border-color:var(--line)}
+#dr{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.55)}
+#dr.open{display:block}
+#pn{position:absolute;inset-block:0;inset-inline-start:0;width:min(560px,100%);background:var(--bg);border-inline-end:1px solid var(--line);overflow:auto;padding:14px 16px 40px}
+@media (max-width:700px){#pn{inset-block-start:6%;border-radius:14px 14px 0 0;border-top:1px solid var(--line)}}
+#pn h2{margin:0}#pn .x{position:sticky;top:0;float:left;font-size:22px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;cursor:pointer}
+.sec{margin:16px 0 4px;font-weight:bold;display:flex;align-items:center;gap:6px}.sec i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.it{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin:5px 0;padding:6px 10px}
+.it summary{cursor:pointer;list-style:none}.it summary::-webkit-details-marker{display:none}
+.it .s{display:block;color:var(--mut);font-size:12px}.it .b{padding-top:6px;border-top:1px dashed var(--line);margin-top:6px}
+.en{direction:ltr;text-align:left;color:var(--mut);font-size:11px;word-break:break-all}
+.chip{display:inline-block;margin:2px 0 2px 5px;padding:0 10px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--fg);font:inherit;font-size:12px;cursor:pointer}
+.pill{font-size:11px;border-radius:8px;padding:0 6px;margin-inline-start:6px}
+.empty{color:var(--mut);padding:30px;text-align:center;grid-column:1/-1}
+</style>
+</head>
+<body>
+<header>
+  <b>🧩 نقشه‌ی قابلیت‌ها</b><small class="hint">v6</small>
+  <a class="btn" href="index.html?v=6">🕸 گراف زنده</a>
+  <a class="btn" href="stats.html?v=6">📊 تحلیل</a>
+  <input type="search" id="q" placeholder="جستجوی قابلیت یا فایل…">
+  <label><input type="checkbox" id="prob"> فقط دارای نکته</label>
+  <span class="hint" id="stat"></span>
+</header>
+<main id="grid"></main>
+<div id="dr"><div id="pn"></div></div>
+<script>
+const FA={fx:'ارز و نرخ',cheque:'چک',crack:'خط شکست',accounts:'سرفصل‌های حسابداری',assistant:'دستیار هوشمند',sync:'همگام‌سازی',pay:'پرداخت و اشتراک',workshop:'کارگاه',posting:'ثبت سند حسابداری',sale:'فروش',purchase:'خرید',party:'طرف‌حساب',stock:'انبار',ledger:'دفتر کل و روزنامه',lot:'لات و مسیر پسته',orchard:'باغ',payroll:'حقوق و دستمزد',report:'گزارش‌ها',license:'اشتراک و مجوز',intake:'پذیرش اتاق انس',tax:'مالیات و ارزش افزوده',fy:'سال مالی',backup:'پشتیبان‌گیری',import:'ورود اطلاعات (اکسل)',return:'برگشت خرید/فروش',proforma:'پیش‌فاکتور',consignment:'امانی',processing:'فراوری',separation:'جداسازی و کوت‌ریزی',treasury:'خزانه و صندوق',voucher:'اسناد حسابداری',perm:'کارکنان و مجوزها',audit:'ممیزی و سلامت داده',kpi:'داشبورد KPI',broker:'دلال و کمیسیون',bank:'مغایرت بانکی',crm:'مدیریت ارتباط با مشتری',warehouse:'انبار و درجه‌بندی',pricing:'قیمت‌گذاری',invoice:'فاکتور',otp:'ورود با پیامک',login:'ورود',staff:'ورود کارکن',upgrade:'ارتقای نسخه',notify:'اعلان و یادآوری',period:'قفل دوره',company:'مشخصات شرکت',common:'ابزارهای مشترک',other:'سایر موارد'};
+const ALIAS={fiscal:'fy',vat:'tax',perms:'perm',permission:'perm',staff:'perm',tier:'upgrade',plan:'upgrade',otp:'login',reminder:'notify',due:'notify',tier_upgrade:'upgrade',sale_core:'sale',weigh:'sale',grade:'sale',tafsili:'accounts',ebook:'ledger',statement:'ledger',trial:'ledger',margin:'report'};
+const COMMON=new Set(['utils','widgets','main','db','fmt','charts','pb','jdate','app','list','entity','ddl','form','money','edition','feature','auth','error','pdf','excel','print','scan','barcode','theme','api','config']);
+const LAY=[['android','📱','اپ اندروید'],['windows','🖥','اپ ویندوز'],['web','🌐','نسخه‌ی وب'],['backend','⚙️','سرور (PHP)'],['admin','🛠','ادمین']];
+const norm=a=>{a=(a||'').toLowerCase();return a.length>3&&a.endsWith('ies')?a.slice(0,-3)+'y':a.length>3&&a.endsWith('s')&&!a.endsWith('ss')?a.slice(0,-1):a};
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clean=d=>(d||'').replace(/^(?:[A-Z]{1,3}\d[\w.\-/+]*\s*[—:–-]\s*)+/,'').trim();
+const isFa=t=>/[\u0600-\u06FF]/.test(t||'');
+let F={},D={},G,keys=[];
+
+Promise.all([fetch('graph.json').then(r=>r.json()),fetch('descriptions.json').then(r=>r.json()).catch(()=>({}))]).then(([g,d])=>{
+  G=g;D=d;const cut=Date.now()/1000-7*86400;
+  const N=new Map(G.nodes.map(n=>[n.id,n]));
+  const files=G.nodes.filter(n=>!['db','infra'].includes(n.group));
+  files.forEach(n=>{const a=norm(n.area);n.k=ALIAS[a]||a;if(COMMON.has(n.k))n.k='common'});
+  const cnt={};files.forEach(n=>{(cnt[n.k]??=new Set()).add(n.path)});
+  files.forEach(n=>{if(n.k!=='common'&&cnt[n.k].size<2)n.k='other'});
+  const inn={};G.links.forEach(l=>inn[l.target]=(inn[l.target]||0)+1);
+  files.forEach(n=>{(F[n.k]??={k:n.k,files:[],tables:new Map(),dep:{},by:{}}).files.push(n)});
+  G.links.forEach(l=>{const s=N.get(l.source),t=N.get(l.target);if(!s||!t||!s.k||!F[s.k])return;
+    if(t.group==='db')F[s.k].tables.set(t.id,t);
+    else if(t.k&&t.k!==s.k&&!['common','other'].includes(t.k)){F[s.k].dep[t.k]=(F[s.k].dep[t.k]||0)+1;F[t.k].by[s.k]=(F[t.k].by[s.k]||0)+1}});
+  for(const f of Object.values(F)){
+    f.diff=f.files.filter(n=>n.group==='android'&&n.shared==='diff');
+    f.unused=f.files.filter(n=>n.group==='backend'&&!inn[n.id]);
+    f.fresh=f.files.filter(n=>n.added>cut);
+    f.cnt=Object.fromEntries(LAY.map(([g])=>[g,f.files.filter(n=>n.group===g).length]));f.cnt.db=f.tables.size;
+    f.size=new Set(f.files.map(n=>n.path)).size;
+  }
+  keys=Object.keys(F).sort((a,b)=>(['common','other'].includes(a)-['common','other'].includes(b))||F[b].size-F[a].size);
+  document.getElementById('stat').textContent=`${keys.length} قابلیت · ${files.length} فایل`;
+  draw();openHash();
+});
+
+function draw(){
+  const q=document.getElementById('q').value.trim().toLowerCase(),p=document.getElementById('prob').checked;
+  const list=keys.filter(k=>{const f=F[k];if(p&&!(f.diff.length||f.unused.length||f.fresh.length))return false;
+    return !q||(FA[k]||k).includes(q)||k.includes(q)||f.files.some(n=>n.label.toLowerCase().includes(q))});
+  document.getElementById('grid').innerHTML=list.map(k=>{const f=F[k],tot=Object.values(f.cnt).reduce((a,b)=>a+b,0)||1;
+    const col={android:'--android',windows:'--windows',web:'--web',backend:'--backend',admin:'--admin',db:'--db'};
+    return `<button class="card" onclick="location.hash='${k}'"><h3>${FA[k]||k}</h3><small>${k}</small>
+     <div class="bar">${Object.entries(f.cnt).map(([g,c])=>c?`<i style="width:${c/tot*100}%;background:var(${col[g]})"></i>`:'').join('')}</div>
+     <div class="chips">${LAY.map(([g,e])=>f.cnt[g]?`<span>${e} ${f.cnt[g]}</span>`:'').join('')}${f.cnt.db?`<span>🗄 ${f.cnt.db}</span>`:''}</div>
+     <div class="chips">${f.fresh.length?`<span class="tag t-new">جدید ${f.fresh.length}</span>`:''}${f.diff.length?`<span class="tag t-bad">${f.diff.length} تفاوت اندروید/ویندوز</span>`:''}${f.unused.length?`<span class="tag t-dep">${f.unused.length} بدون مصرف‌کننده</span>`:''}</div></button>`}).join('')||'<div class="empty">موردی پیدا نشد</div>';
+}
+q.oninput=prob.onchange=draw;
+
+const desc=n=>{const d=D[n.hash];if(d&&d.fa)return d.fa;return isFa(n.doc)?clean(n.doc):''};
+function item(n,badge=''){const d=desc(n),s=d.length>95?d.slice(0,95)+'…':d;
+  return `<details class="it"><summary><b>${esc(n.label)}</b>${badge}<span class="s">${esc(s)||'—'}</span></summary><div class="b">${d?esc(d):'<i>توضیح فارسی هنوز ساخته نشده</i>'}${!d&&n.doc?`<div class="en">${esc(clean(n.doc))}</div>`:''}<div class="en">${esc(n.path)}</div></div></details>`}
+const chip=(k,c)=>`<button class="chip" onclick="location.hash='${k}'">${FA[k]||k} · ${c}</button>`;
+const topN=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+function open_(k){const f=F[k];if(!f)return close_();
+  const sec=(c,t,body)=>body?`<div class="sec"><i style="background:var(--${c})"></i>${t}</div>${body}`:'';
+  const apps=new Map();f.files.filter(n=>n.group==='android'||n.group==='windows').forEach(n=>{const e=apps.get(n.path)||{};e[n.group]=n;apps.set(n.path,e)});
+  const appRows=[...apps.values()].map(e=>{const n=e.android||e.windows;
+    const b=e.android&&e.windows?(e.android.shared==='diff'?'<span class="pill t-bad tag">اندروید ≠ ویندوز</span>':'<span class="pill tag t-dep">هر دو نسخه</span>'):`<span class="pill tag t-dep">فقط ${e.android?'اندروید':'ویندوز'}</span>`;
+    return item(n,b)}).join('');
+  const of=g=>f.files.filter(n=>n.group===g).map(n=>item(n,n.added>Date.now()/1000-7*86400?'<span class="pill tag t-new">جدید</span>':'')).join('');
+  const bk=f.files.filter(n=>n.group==='backend').map(n=>item(n,f.unused.includes(n)?'<span class="pill tag t-dep">بدون مصرف‌کننده</span>':'')).join('');
+  document.getElementById('pn').innerHTML=`<button class="x" onclick="location.hash=''">×</button><h2>${FA[k]||k}</h2><div class="en">${k} · ${f.size} فایل</div>
+   ${sec('android','صفحه‌ها و کد اپ (اندروید و ویندوز)',appRows)}${sec('web','نسخه‌ی وب',of('web'))}${sec('backend','سرور (PHP) — منطق و API',bk)}${sec('admin','ادمین',of('admin'))}
+   ${f.tables.size?sec('db','جدول‌های دیتابیس',[...f.tables.values()].map(t=>`<span class="chip">${esc(t.label)}</span>`).join('')):''}
+   ${Object.keys(f.dep).length?`<div class="sec">⬅ به این قابلیت‌ها وابسته است</div>${topN(f.dep).map(([a,c])=>chip(a,c)).join('')}`:''}
+   ${Object.keys(f.by).length?`<div class="sec">➡ این قابلیت‌ها از آن استفاده می‌کنند</div>${topN(f.by).map(([a,c])=>chip(a,c)).join('')}`:''}`;
+  document.getElementById('dr').classList.add('open');document.getElementById('pn').scrollTop=0}
+function close_(){document.getElementById('dr').classList.remove('open')}
+function openHash(){const k=decodeURIComponent(location.hash.slice(1));k&&F[k]?open_(k):close_()}
+addEventListener('hashchange',openHash);
+document.getElementById('dr').onclick=e=>{if(e.target.id==='dr')location.hash=''};
+addEventListener('keydown',e=>{if(e.key==='Escape')location.hash=''});
+</script>
+</body>
+</html>
