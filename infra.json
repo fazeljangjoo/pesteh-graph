@@ -1,0 +1,16 @@
+{
+  "nodes": [
+    {"id": "host", "label": "هاست cPanel (pesteh-bazar.ir)", "host": "pesteh-bazar.ir"},
+    {"id": "mysql", "label": "MySQL", "host": "localhost"},
+    {"id": "sms", "label": "سرویس پیامک"},
+    {"id": "ai", "label": "سرویس هوش مصنوعی (دستیار)"}
+  ],
+  "links": [
+    {"from": "web:app/app.js", "to": "infra:host"},
+    {"from": "android:lib/main.dart", "to": "infra:host"},
+    {"from": "windows:lib/main.dart", "to": "infra:host"},
+    {"from": "backend:backend/api/app.php", "to": "infra:mysql"},
+    {"from": "backend:backend/api/notify_sms.php", "to": "infra:sms"},
+    {"from": "backend:backend/api/assistant_ai_client.php", "to": "infra:ai"}
+  ]
+}

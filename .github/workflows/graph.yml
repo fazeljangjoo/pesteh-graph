@@ -1,0 +1,26 @@
+name: Update project graph
+# این ریپو (pesteh-graph) را جدا و عمومی بساز. هر ۱۵ دقیقه ریپوها را می‌خواند و docs/graph.json را به‌روز می‌کند.
+on:
+  schedule: [{cron: '*/15 * * * *'}]
+  workflow_dispatch:
+  repository_dispatch:           # اختیاری: از ریپوهای دیگر بعد از هر push صدا زده می‌شود
+    types: [project-changed]
+permissions:
+  contents: write
+jobs:
+  graph:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clone the three public repos
+        run: |
+          git clone --depth 1 https://github.com/YOUR_USER/ANDROID_REPO.git src/android
+          git clone --depth 1 https://github.com/YOUR_USER/WINDOWS_REPO.git src/windows
+          git clone --depth 1 https://github.com/YOUR_USER/WEB_REPO.git     src/web
+      - run: python analyze.py --android src/android --windows src/windows --web src/web --infra infra.json -o docs/graph.json
+      - name: Commit if changed
+        run: |
+          git config user.name  "graph-bot"
+          git config user.email "graph-bot@users.noreply.github.com"
+          git add docs/graph.json
+          git diff --cached --quiet || (git commit -m "update graph" && git push)

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نقشه‌ی پسته‌بازار</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root{--bg:#14181f;--panel:#1c222c;--fg:#e8ebf0;--mut:#8a94a6;--line:#3a4558;--new:#ffd23f}
+@media (prefers-color-scheme:light){:root{--bg:#f4f5f7;--panel:#fff;--fg:#1b2230;--mut:#5b6678;--line:#b8c0cc;--new:#d98e00}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 Tahoma,"Segoe UI",sans-serif;display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+header b{font-size:16px}
+label{display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+input[type=search]{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:5px 9px;width:170px}
+#stat{margin-inline-start:auto;color:var(--mut)}
+main{flex:1;position:relative;min-height:0}
+svg{width:100%;height:100%;display:block}
+#info{position:absolute;inset-inline-start:12px;bottom:12px;max-width:340px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:none}
+#info small{color:var(--mut);direction:ltr;display:block}
+#news{position:absolute;inset-inline-end:12px;top:12px;max-width:300px;background:var(--panel);border:1px solid var(--new);border-radius:8px;padding:8px 12px;display:none}
+.new circle{stroke:var(--new);stroke-width:3}
+@keyframes p{50%{stroke-width:7;stroke-opacity:.4}}
+.new circle{animation:p 1.6s 6}
+@media (prefers-reduced-motion:reduce){.new circle{animation:none}}
+text{fill:var(--fg);font-size:10px;pointer-events:none;paint-order:stroke;stroke:var(--bg);stroke-width:3px}
+</style>
+</head>
+<body>
+<header>
+  <b>نقشه‌ی اتصال پروژه</b>
+  <span id="groups"></span>
+  <label><input type="checkbox" id="sql"> جدول‌های دیتابیس</label>
+  <label><input type="checkbox" id="req" checked> require در بک‌اند</label>
+  <input type="search" id="q" placeholder="جستجوی فایل…">
+  <span id="stat"></span>
+</header>
+<main>
+  <svg id="svg"></svg>
+  <div id="news"></div>
+  <div id="info"></div>
+</main>
+<script>
+const COLORS={android:'#3ddc84',windows:'#4aa3ff',web:'#ff9f43',backend:'#b388ff',admin:'#ff6b9d',db:'#8a94a6',infra:'#ffd23f'};
+const NAMES={android:'اندروید',windows:'ویندوز',web:'وب',backend:'بک‌اند',admin:'ادمین',db:'دیتابیس',infra:'سرور/هاست'};
+const KIND={import:'#5b6678',require:'#7a5fb8',api:'#ff9f43',sql:'#3a4558','shared-same':'#2a6a4a','shared-diff':'#d9534f',infra:'#ffd23f'};
+const NEW_DAYS=7, REFRESH_MS=60000;
+const on=new Set(['android','windows','web','backend','admin','infra']);
+let data=null, sim=null, sel=null;
+const svg=d3.select('#svg'), root=svg.append('g'), gl=root.append('g'), gn=root.append('g');
+svg.call(d3.zoom().scaleExtent([.1,6]).on('zoom',e=>root.attr('transform',e.transform)));
+
+document.getElementById('groups').innerHTML=Object.keys(NAMES).filter(g=>g!='db').map(g=>
+ `<label><input type="checkbox" data-g="${g}" ${on.has(g)?'checked':''}><span class="dot" style="background:${COLORS[g]}"></span>${NAMES[g]}</label>`).join(' ');
+document.querySelectorAll('[data-g]').forEach(c=>c.onchange=()=>{c.checked?on.add(c.dataset.g):on.delete(c.dataset.g);draw()});
+for(const id of ['sql','req','q'])document.getElementById(id).oninput=draw;
+
+async function load(){
+  try{
+    const r=await fetch('graph.json?'+Date.now()); const d=await r.json();
+    if(!data||d.generated!==data.generated){const first=!data; data=d; draw(first);}
+  }catch(e){document.getElementById('stat').textContent='graph.json پیدا نشد'}
+}
+
+function draw(){
+  if(!data)return;
+  const showSql=document.getElementById('sql').checked, showReq=document.getElementById('req').checked;
+  const q=document.getElementById('q').value.trim().toLowerCase(), cut=Date.now()/1000-NEW_DAYS*86400;
+  const gOn=g=>on.has(g)||(g==='db'&&showSql);
+  const nodes=data.nodes.filter(n=>gOn(n.group)).map(n=>({...n}));
+  const ids=new Set(nodes.map(n=>n.id));
+  const links=data.links.filter(l=>ids.has(l.source)&&ids.has(l.target)&&(showReq||l.kind!=='require')).map(l=>({...l}));
+  const isNew=o=>o.added&&o.added>cut;
+  const deg={};links.forEach(l=>{deg[l.source]=(deg[l.source]||0)+1;deg[l.target]=(deg[l.target]||0)+1});
+  const r=n=>4+Math.min(14,Math.sqrt(deg[n.id]||1)*1.6);
+
+  const L=gl.selectAll('line').data(links,d=>d.source+d.target+d.kind).join('line')
+    .attr('stroke',d=>isNew(d)?'var(--new)':KIND[d.kind]).attr('stroke-opacity',d=>isNew(d)?1:.45)
+    .attr('stroke-width',d=>isNew(d)?2.5:Math.min(3,.6+d.w*.3)).attr('stroke-dasharray',d=>d.kind==='shared-diff'?'4 3':null);
+  const N=gn.selectAll('g').data(nodes,d=>d.id).join(e=>{const g=e.append('g');g.append('circle');g.append('text').attr('dy',-8).attr('text-anchor','middle');return g})
+    .attr('class',d=>isNew(d)?'new':'').style('cursor','pointer')
+    .on('click',(e,d)=>show(d,links)).call(d3.drag().on('start',(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y})
+      .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y}).on('end',(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=d.fy=null}));
+  N.select('circle').attr('r',r).attr('fill',d=>COLORS[d.group])
+    .attr('stroke',d=>d.shared==='diff'?'#d9534f':'var(--bg)').attr('stroke-width',d=>d.shared==='diff'?2:1)
+    .attr('opacity',d=>!q||d.label.toLowerCase().includes(q)?1:.12);
+  N.select('text').text(d=>(deg[d.id]>12||isNew(d)||(q&&d.label.toLowerCase().includes(q)))?d.label:'');
+
+  if(sim)sim.stop();
+  sim=d3.forceSimulation(nodes).force('link',d3.forceLink(links).id(d=>d.id).distance(40).strength(.25))
+    .force('charge',d3.forceManyBody().strength(-60)).force('collide',d3.forceCollide(8))
+    .force('x',d3.forceX(innerWidth/2).strength(.04)).force('y',d3.forceY(innerHeight/2).strength(.04))
+    .on('tick',()=>{L.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+      N.attr('transform',d=>`translate(${d.x},${d.y})`)});
+
+  const nn=nodes.filter(isNew), ne=links.filter(isNew);
+  const box=document.getElementById('news');
+  box.style.display=(nn.length||ne.length)?'block':'none';
+  box.innerHTML=`<b>تغییرات ${NEW_DAYS} روز اخیر</b><br>${nn.length} بخش جدید، ${ne.length} اتصال جدید<br><small>${nn.slice(0,8).map(n=>n.label).join('، ')}</small>`;
+  document.getElementById('stat').textContent=`${nodes.length} بخش · ${links.length} اتصال · به‌روزرسانی ${new Date(data.generated*1000).toLocaleString('fa-IR')}`;
+}
+
+function show(d,links){
+  const out=links.filter(l=>l.source.id===d.id).map(l=>l.target.label), inn=links.filter(l=>l.target.id===d.id).map(l=>l.source.label);
+  const i=document.getElementById('info'); i.style.display='block';
+  i.innerHTML=`<b>${d.label}</b> (${NAMES[d.group]})<small>${d.path||d.host||''}</small>
+   ${d.shared?`<div>در دو نسخه: ${d.shared==='same'?'یکسان':'<span style="color:#d9534f">متفاوت</span>'}</div>`:''}
+   <div>به این وصل است (${out.length}): ${out.slice(0,10).join('، ')}${out.length>10?'…':''}</div>
+   <div>این را صدا می‌زنند (${inn.length}): ${inn.slice(0,10).join('، ')}${inn.length>10?'…':''}</div>`;
+}
+load(); setInterval(load,REFRESH_MS);
+</script>
+</body>
+</html>
