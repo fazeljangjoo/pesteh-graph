@@ -33,64 +33,87 @@ details.q summary{cursor:pointer;font-weight:bold}details.q[open] summary{margin
 dl{margin:0}dt{font-weight:bold;margin-top:10px}dd{margin:0;color:var(--mut)}
 .leg{display:flex;flex-wrap:wrap;gap:6px 18px}.leg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-inline-end:5px}
 .t,.tb{display:none!important}.tech .t{display:inline!important}.tech .tb{display:block!important}
+.spot{position:relative;z-index:15;box-shadow:0 0 0 9999px rgba(0,0,0,.65),0 0 0 3px var(--new);border-radius:12px}
+header.spot{position:sticky;border-radius:0}
+#tour{position:fixed;inset-inline:0;bottom:0;z-index:60;display:none;padding:10px;pointer-events:none}
+#tour .tc{pointer-events:auto;max-width:500px;margin:auto;background:var(--panel);border:2px solid var(--new);border-radius:14px;padding:10px 14px}
+#tour b{font-size:16px}#tour p{margin:4px 0 8px;font-size:14px;line-height:1.8}
+#tour .tb2{display:flex;gap:8px;align-items:center}#tour .tb2 span{flex:1;text-align:center;color:var(--mut);font-size:12px}
+.tb2 button{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:3px 14px;font:inherit;cursor:pointer}.tb2 button.go{background:var(--new);color:#111;border-color:var(--new);font-weight:bold}
+.rel{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:10px}
+.rel h4{margin:0 0 6px;font-size:13px;color:var(--mut)}.rel .box{min-height:60px}
+.ri{all:unset;display:block;box-sizing:border-box;width:100%;cursor:pointer;margin:4px 0;font-size:13px;border-radius:6px;padding:2px 6px;position:relative}
+.ri:hover{background:var(--bg)}.ri i{position:absolute;inset-block:0;inset-inline-start:0;background:var(--c);opacity:.22;border-radius:6px}.ri span{position:relative;display:flex;justify-content:space-between;gap:8px}
+.mid{border:2px solid var(--new)!important}.mid p{margin:4px 0;font-size:13px}
+.picks{display:flex;flex-wrap:wrap;gap:4px}
+html[dir=ltr] body{font-family:"Segoe UI",system-ui,Tahoma,sans-serif}
 </style>
 </head>
 <body>
 <header>
-  <b>🏠 مرکز راهنما</b><small class="hint">v7</small>
-  <a class="btn" href="map.html?v=7">🧩 قابلیت‌ها</a><a class="btn" href="index.html?v=7">🕸 گراف زنده</a><a class="btn" href="stats.html?v=7">📊 تحلیل</a>
-  <input id="q" type="search" placeholder="جستجو در همه‌چیز: قابلیت، فایل، اصطلاح…" autocomplete="off">
-  <button class="btn alt" id="mode" title="تغییر سطح جزئیات">سطح: ساده</button>
+  <b data-en="🏠 Guide Center">🏠 مرکز راهنما</b><small class="hint">v8</small>
+  <a class="btn" href="map.html?v=8" data-en="🧩 Features">🧩 قابلیت‌ها</a><a class="btn" href="index.html?v=8" data-en="🕸 Live graph">🕸 گراف زنده</a><a class="btn" href="stats.html?v=8" data-en="📊 Analysis">📊 تحلیل</a>
+  <input id="q" type="search" placeholder="جستجو در همه‌چیز: قابلیت، فایل، اصطلاح…" data-ph-en="Search everything: feature, file, term…" autocomplete="off">
+  <button class="btn alt" id="tourbtn" data-en="🎓 Tour">🎓 تور</button>
+  <button class="btn alt" id="mode"></button>
+  <button class="btn alt" id="lang">English</button>
 </header>
 <div id="sr"></div>
 <main>
 <section id="about">
-  <h1>پسته‌بازار چیست و از چه بخش‌هایی ساخته شده؟</h1>
-  <p>پسته‌بازار نرم‌افزار مدیریت <b>خرید، فروش، انبار، کارگاه و حسابداری پسته</b> است. سه نسخه دارد (اندروید، ویندوز و وب) که هر سه با <b>یک سرور مشترک</b> حرف می‌زنند و داده‌ها در یک دیتابیس نگهداری می‌شود.</p>
+  <h1 data-en="What is Pesteh-Bazar and what is it made of?">پسته‌بازار چیست و از چه بخش‌هایی ساخته شده؟</h1>
+  <p data-en="Pesteh-Bazar is software for managing <b>pistachio purchasing, sales, warehouse, workshop and accounting</b>. It has three versions (Android, Windows and web) that all talk to <b>one shared server</b>, and the data lives in one database.">پسته‌بازار نرم‌افزار مدیریت <b>خرید، فروش، انبار، کارگاه و حسابداری پسته</b> است. سه نسخه دارد (اندروید، ویندوز و وب) که هر سه با <b>یک سرور مشترک</b> حرف می‌زنند و داده‌ها در یک دیتابیس نگهداری می‌شود.</p>
   <div class="arch" id="arch"></div>
-  <p class="flow">نسخه‌های کاربری ⬇ همه‌ی درخواست‌ها از یک دروازه‌ی مشترک (<span class="en" style="display:inline">app.php</span>) می‌گذرد ⬇ سرور داده را در دیتابیس می‌خواند و می‌نویسد</p>
+  <p class="flow" data-en="User apps ⬇ every request passes one shared gateway (<span class='en' style='display:inline'>app.php</span>) ⬇ the server reads and writes the database">نسخه‌های کاربری ⬇ همه‌ی درخواست‌ها از یک دروازه‌ی مشترک (<span class="en" style="display:inline">app.php</span>) می‌گذرد ⬇ سرور داده را در دیتابیس می‌خواند و می‌نویسد</p>
   <p class="hint" id="meta"></p>
 </section>
 
 <section id="start">
-  <h2>از کجا شروع کنم؟</h2><p class="sub">بر اساس نقش خودتان یکی را انتخاب کنید.</p>
+  <h2 data-en="Where do I start?">از کجا شروع کنم؟</h2><p class="sub" data-en="Pick the role that fits you.">بر اساس نقش خودتان یکی را انتخاب کنید.</p>
   <div class="cards">
-    <div class="box"><h3>👔 مدیر یا مالک (غیر فنی)</h3><p class="hint">می‌خواهید بدانید برنامه چه می‌کند و چه چیزی تغییر کرده.</p><ul>
-      <li><a href="map.html">نقشه‌ی قابلیت‌ها</a>؛ هر قابلیت به زبان ساده توضیح داده شده</li>
-      <li><a href="#faq">«چه چیزی تازه تغییر کرده؟»</a></li><li><a href="#gloss">واژه‌نامه‌ی اصطلاحات</a></li></ul></div>
-    <div class="box"><h3>💻 برنامه‌نویس تازه‌وارد</h3><p class="hint">می‌خواهید بفهمید کد کجاست و چه به چه وصل است.</p><ul>
-      <li>ابتدا <a href="map.html">نقشه‌ی قابلیت‌ها</a> را باز کنید و قابلیت مورد نظر را انتخاب کنید</li>
-      <li>سپس <a href="index.html">گراف زنده</a> برای دیدن اتصال‌ها</li><li><a href="#impact">تحلیل اثر تغییر</a> قبل از دست‌زدن به هر فایل</li></ul></div>
-    <div class="box"><h3>🛠 مسئول فنی / معمار</h3><p class="hint">می‌خواهید کیفیت و ریسک را بسنجید.</p><ul>
-      <li><a href="stats.html">صفحه‌ی تحلیل</a>: حجم کد، هاب‌ها، چرخه‌ها، رشد</li>
-      <li><a href="#faq">فایل‌های متفاوت اندروید/ویندوز و بلااستفاده</a></li><li>سطح را روی «فنی» بگذارید</li></ul></div>
+    <div class="box"><h3 data-en="👔 Manager or owner (non-technical)">👔 مدیر یا مالک (غیر فنی)</h3><p class="hint" data-en="You want to know what the app does and what changed.">می‌خواهید بدانید برنامه چه می‌کند و چه چیزی تغییر کرده.</p><ul>
+      <li data-en="<a href='map.html'>Feature map</a>: every feature explained in plain language"><a href="map.html">نقشه‌ی قابلیت‌ها</a>؛ هر قابلیت به زبان ساده توضیح داده شده</li>
+      <li data-en="<a href='#faq'>“What is new?”</a>"><a href="#faq">«چه چیزی تازه تغییر کرده؟»</a></li><li data-en="<a href='#gloss'>Glossary of terms</a>"><a href="#gloss">واژه‌نامه‌ی اصطلاحات</a></li></ul></div>
+    <div class="box"><h3 data-en="💻 New developer">💻 برنامه‌نویس تازه‌وارد</h3><p class="hint" data-en="You want to know where the code is and how things connect.">می‌خواهید بفهمید کد کجاست و چه به چه وصل است.</p><ul>
+      <li data-en="Open the <a href='map.html'>Feature map</a> and pick a feature">ابتدا <a href="map.html">نقشه‌ی قابلیت‌ها</a> را باز کنید و قابلیت مورد نظر را انتخاب کنید</li>
+      <li data-en="Then the <a href='index.html'>Live graph</a> to see connections">سپس <a href="index.html">گراف زنده</a> برای دیدن اتصال‌ها</li><li data-en="<a href='#impact'>Impact analysis</a> before touching any file"><a href="#impact">تحلیل اثر تغییر</a> قبل از دست‌زدن به هر فایل</li></ul></div>
+    <div class="box"><h3 data-en="🛠 Tech lead / architect">🛠 مسئول فنی / معمار</h3><p class="hint" data-en="You want to assess quality and risk.">می‌خواهید کیفیت و ریسک را بسنجید.</p><ul>
+      <li data-en="<a href='stats.html'>Analysis page</a>: code size, hubs, cycles, growth"><a href="stats.html">صفحه‌ی تحلیل</a>: حجم کد، هاب‌ها، چرخه‌ها، رشد</li>
+      <li data-en="<a href='#faq'>Files that differ between Android/Windows, and unused ones</a>"><a href="#faq">فایل‌های متفاوت اندروید/ویندوز و بلااستفاده</a></li><li data-en="Set the level to “Technical”">سطح را روی «فنی» بگذارید</li></ul></div>
   </div>
 </section>
 
-<section id="faq"><h2>پرسش‌های پرتکرار</h2><p class="sub">پاسخ‌ها از روی داده‌ی واقعی پروژه محاسبه می‌شوند و با هر به‌روزرسانی عوض می‌شوند.</p><div id="faqs"></div></section>
+<section id="faq"><h2 data-en="Frequently asked questions">پرسش‌های پرتکرار</h2><p class="sub" data-en="Answers are computed from real project data and change with every update.">پاسخ‌ها از روی داده‌ی واقعی پروژه محاسبه می‌شوند و با هر به‌روزرسانی عوض می‌شوند.</p><div id="faqs"></div></section>
+
+<section id="rel"><h2 data-en="How do features connect to each other?">قابلیت‌ها چطور به هم وصل‌اند؟</h2>
+  <p class="sub" data-en="Pick a feature: see what it depends on and what depends on it. Click any item to move to it.">یک قابلیت را انتخاب کنید تا ببینید به چه چیزی وابسته است و چه چیزی به آن وابسته است. روی هر مورد کلیک کنید تا به آن بروید.</p>
+  <div class="picks" id="picks"></div><div class="rel" id="relv"></div></section>
 
 <section id="impact">
-  <h2>اگر این فایل را عوض کنم چه می‌شود؟</h2>
-  <p class="sub">اسم یک فایل یا جدول را بنویسید؛ می‌بینید چه بخش‌هایی به آن وابسته‌اند و باید تست شوند.</p>
-  <input id="ip" type="search" placeholder="مثلاً: utils.dart یا purchases یا app.php" autocomplete="off">
+  <h2 data-en="If I change this file, what happens?">اگر این فایل را عوض کنم چه می‌شود؟</h2>
+  <p class="sub" data-en="Type a file or table name to see what depends on it and what to test.">اسم یک فایل یا جدول را بنویسید؛ می‌بینید چه بخش‌هایی به آن وابسته‌اند و باید تست شوند.</p>
+  <input id="ip" type="search" placeholder="مثلاً: utils.dart یا purchases یا app.php" data-ph-en="e.g. utils.dart or purchases or app.php" autocomplete="off">
   <div id="ipr"></div><div id="ipo" style="margin-top:10px"></div>
 </section>
 
-<section id="gloss"><h2>واژه‌نامه</h2><p class="sub">اصطلاحات کسب‌وکار و فنی که در پروژه می‌بینید.</p><dl id="gl"></dl>
-  <p class="hint">این تعریف‌ها از روی کامنت‌های داخل کد نوشته شده‌اند؛ اگر جایی با برداشت شما فرق دارد اصلاحش کنید.</p></section>
+<section id="gloss"><h2 data-en="Glossary">واژه‌نامه</h2><p class="sub" data-en="Business and technical terms you will meet in the project.">اصطلاحات کسب‌وکار و فنی که در پروژه می‌بینید.</p><dl id="gl"></dl>
+  <p class="hint" data-en="Definitions were written from code comments; correct anything that differs from your understanding.">این تعریف‌ها از روی کامنت‌های داخل کد نوشته شده‌اند؛ اگر جایی با برداشت شما فرق دارد اصلاحش کنید.</p></section>
 
-<section id="legend"><h2>راهنمای رنگ‌ها و نشانه‌ها</h2>
-  <div class="box"><div class="leg">
-    <span><i style="background:var(--android)"></i>اندروید</span><span><i style="background:var(--windows)"></i>ویندوز</span><span><i style="background:var(--web)"></i>وب</span>
-    <span><i style="background:var(--backend)"></i>سرور</span><span><i style="background:var(--admin)"></i>ادمین</span><span><i style="background:var(--db)"></i>دیتابیس</span></div>
-   <p style="margin:10px 0 0"><span style="color:var(--new)">●</span> زرد و چشمک‌زن = تازه (۷ روز اخیر) · <span style="color:var(--bad)">●</span> قرمز = فایل در اندروید و ویندوز متفاوت است یا مشکل سرور · خط نارنجی = تماس اپ با سرور · خط‌چین قرمز = دو نسخه از هم دور شده‌اند</p></div>
+<section id="legend"><h2 data-en="Colors and symbols guide">راهنمای رنگ‌ها و نشانه‌ها</h2>
+  <div class="box"><div class="leg" id="leg"></div>
+   <p style="margin:10px 0 0" data-en="<span style='color:var(--new)'>●</span> Yellow and pulsing = new (last 7 days) · <span style='color:var(--bad)'>●</span> red = file differs between Android and Windows, or a server problem · orange line = app calling the server · dashed red line = the two versions have drifted apart"><span style="color:var(--new)">●</span> زرد و چشمک‌زن = تازه (۷ روز اخیر) · <span style="color:var(--bad)">●</span> قرمز = فایل در اندروید و ویندوز متفاوت است یا مشکل سرور · خط نارنجی = تماس اپ با سرور · خط‌چین قرمز = دو نسخه از هم دور شده‌اند</p></div>
 </section>
 </main>
+<div id="tour"><div class="tc"><b id="tt"></b><p id="tx"></p><div class="tb2"><button id="tp"></button><span id="tn"></span><button id="tx2"></button><button class="go" id="tg"></button></div></div></div>
 
 <script src="shared.js"></script>
 <script>
 const $=id=>document.getElementById(id),USE=new Set(['import','require','api','sql']);
-const GN={android:'اندروید',windows:'ویندوز',web:'وب',backend:'سرور',admin:'ادمین',db:'جدول'},COL={android:'--android',windows:'--windows',web:'--web',backend:'--backend',admin:'--admin',db:'--db'};
+let lang='fa';const tr=(a,b)=>lang==='en'?b:a;
+const GNA={android:'اندروید',windows:'ویندوز',web:'وب',backend:'سرور',admin:'ادمین',db:'جدول'},GNE={android:'Android',windows:'Windows',web:'Web',backend:'Server',admin:'Admin',db:'Table'};
+const gn=g=>tr(GNA[g],GNE[g]),COL={android:'--android',windows:'--windows',web:'--web',backend:'--backend',admin:'--admin',db:'--db'};
+const FAEN={fx:'Foreign currency',cheque:'Cheques',crack:'Cracking line',accounts:'Chart of accounts',account:'Chart of accounts',assistant:'AI assistant',sync:'Sync',pay:'Payments & subscription',workshop:'Workshop',posting:'Auto accounting entries',sale:'Sales form',purchase:'Purchases',party:'Parties',stock:'Warehouse stock',ledger:'Ledgers & statements',lot:'Lot tracking',payroll:'Payroll',report:'Reports',license:'License',intake:'Intake room',tax:'Tax & VAT',fy:'Fiscal year',backup:'Backup',import:'Bulk import',return:'Returns',proforma:'Pro-forma invoices',consignment:'Consignment',processing:'Processing',separation:'Separation',treasury:'Treasury',voucher:'Accounting vouchers',perm:'Staff & permissions',audit:'Audit & data health',kpi:'KPI dashboard',broker:'Brokers',bank:'Bank reconciliation',crm:'CRM',warehouse:'Warehouses',pricing:'Pricing',invoice:'Invoices',login:'Login',upgrade:'Plan upgrade',notify:'Reminders',period:'Period lock',company:'Company profile',approval:'Second approval',correction:'Corrections',daily:'Daily reconciliation',doc:'Drafts & summaries',fin:'Financial block',lc:'Letters of credit',mix:'Mixes',module:'Web modules',ai:'AI quota',code:'Pistachio code',payment:'Mixed payment',home:'Home screen',index:'Site entry',orchard:'Orchards',common:'Shared tools',other:'Other'};
+const fnm=k=>lang==='en'?(FAEN[k]||k):(FA[k]||k);
 const GL=[
 ['لات','یک دسته‌ی مشخص پسته که خریداری یا تولید شده و در انبار نگهداری می‌شود. هر لات کد و موجودی جدا دارد.'],
 ['کارتکس','دفتر ورود و خروج یک لات (یا یک مالک): چه مقدار آمد، چه مقدار رفت و چقدر مانده است.'],
@@ -120,76 +143,150 @@ const GL=[
 ['وابستگی (import)','وقتی یک فایل از فایل دیگر استفاده می‌کند. در گراف با یک خط نشان داده می‌شود.'],
 ['هاب','فایلی که تعداد زیادی فایل دیگر به آن وابسته‌اند؛ تغییرش پرخطر است.'],
 ['چرخه‌ی وابستگی','وقتی چند فایل مستقیم یا غیرمستقیم به هم وابسته‌اند؛ تست و نگهداری را سخت می‌کند.']];
+const GLEN=[['Lot','A specific batch of pistachios that was bought or produced and kept in the warehouse. Each lot has its own code and stock.'],
+['Cartex (stock card)','The in/out ledger of a lot (or an owner): how much came in, went out and remains.'],
+['Separation','Splitting one lot into several outputs (e.g. kernel, hull, defective) while recording where each output came from.'],
+['Processing / outsourcing','Giving a lot to someone else for work; the cost and fee are spread over the output lots.'],
+['Cracking line','The operation line that cracks the pistachios; the source lot’s cost is spread over the outputs and is called the “cost pool”.'],
+['Ounce grade','A size grade of pistachios recorded for each lot.'],
+['Consignment','Goods owned by someone else but kept in our warehouse (inbound), or ours kept at someone else’s (outbound).'],
+['Party','Anyone you trade with: seller, buyer or broker.'],
+['Due date','The deadline for paying or receiving cheques and installments. The app reminds you near the date.'],
+['Accounting voucher','A double-entry record of a financial event (debit and credit). Most are created automatically from purchases, sales, cheques, etc.'],
+['Chart of accounts (group, general, sub)','Three levels of the account tree, e.g. group “Assets”, general “Bank”, sub “Bank Melli”.'],
+['Detail account (tafsili)','An extra dimension on accounts to identify, e.g., a person, cash box or cost center.'],
+['Fiscal year','The Jalali-calendar period after which the books are closed. Closing the year creates a closing voucher.'],
+['Period lock','Documents up to a given date can no longer be edited.'],
+['Correction document','Used to fix the price or weight of a finalized document without touching the document itself.'],
+['Currency revaluation','Updating the value of foreign-currency documents at the new rate at period end.'],
+['Pro-forma invoice','A price offer to a customer. It has no effect on stock or accounting until converted to a sale.'],
+['Letter of credit (LC)','A payment method for export sales with fixed deadlines; the app only tracks it.'],
+['Bank reconciliation','Matching the bank statement against the accounting entries of the bank account.'],
+['Audit log','A list of who changed what, and when.'],
+['Green / Gold edition','Two product levels; per the code, “Gold” adds full accounting and “Green” is the base.'],
+['Rial / FX plan','The FX plan supports foreign-currency buying and selling in addition to rials.'],
+['Offline-first','The app works without internet and syncs changes with the server later.'],
+['Sync','Reconciling the device’s data with the server.'],
+['API / action','Messages the app sends to the server; each message has an “action” such as <span class="en" style="display:inline">accounts.list</span>.'],
+['Dependency (import)','When one file uses another. Shown as a line in the graph.'],
+['Hub','A file many other files depend on; changing it is risky.'],
+['Dependency cycle','When several files depend on each other directly or indirectly; it makes testing and maintenance harder.']];
 
-let G,D={},N,rev={},fwd={},F={},CUT=Date.now()/1000-7*86400;
+let G,D={},N,rev={},fwd={},F={},REL={dep:{},by:{}},relK='sale',CUT=Date.now()/1000-7*86400;
 Promise.all([fetch('graph.json').then(r=>r.json()),fetch('descriptions.json').then(r=>r.json()).catch(()=>({}))]).then(([g,d])=>{
   G=g;D=d;N=new Map(G.nodes.map(n=>[n.id,n]));
-  const files=G.nodes.filter(n=>!['db','infra'].includes(n.group));assignFeatures(files);
-  files.forEach(n=>(F[n.k]??=[]).push(n));
-  G.links.forEach(l=>{if(USE.has(l.kind)){(rev[l.target]??=[]).push(l.source);(fwd[l.source]??=[]).push(l.target)}});
-  arch();faq();gloss();
+  const files=G.nodes.filter(n=>!['db','infra'].includes(n.group));assignFeatures(files);files.forEach(n=>(F[n.k]??=[]).push(n));
+  G.links.forEach(l=>{if(!USE.has(l.kind))return;(rev[l.target]??=[]).push(l.source);(fwd[l.source]??=[]).push(l.target);
+    const s=N.get(l.source),t=N.get(l.target);if(s.k&&t.k&&s.k!==t.k){(REL.dep[s.k]??={})[t.k]=(REL.dep[s.k][t.k]||0)+1;(REL.by[t.k]??={})[s.k]=(REL.by[t.k][s.k]||0)+1}});
+  try{if(localStorage.getItem('hublang')==='en')lang='en'}catch(e){}
+  setLang(lang,true);
+  try{if(!localStorage.getItem('hubtour'))setTimeout(startTour,400)}catch(e){}
 });
 const cnt=g=>G.nodes.filter(n=>n.group===g).length;
-const fa=k=>FA[k]||k;
-const rank=(q)=>(a,b)=>((a.label.toLowerCase()===q?0:a.label.toLowerCase().startsWith(q)?1:2)-(b.label.toLowerCase()===q?0:b.label.toLowerCase().startsWith(q)?1:2));
-const lnk=n=>`<span class="chip">${esc(n.label)}</span>`;
-const fchip=k=>`<a class="chip" href="map.html#${k}">${esc(fa(k))}</a>`;
+const lnk=n=>`<span class="chip">${esc(n.label)}</span>`,fchip=k=>`<a class="chip" href="map.html#${k}">${esc(fnm(k))}</a>`;
+const rank=q=>(a,b)=>((a.label.toLowerCase()===q?0:a.label.toLowerCase().startsWith(q)?1:2)-(b.label.toLowerCase()===q?0:b.label.toLowerCase().startsWith(q)?1:2));
+
+function setLang(l,init){
+  lang=l;document.documentElement.lang=l==='en'?'en':'fa';document.documentElement.dir=l==='en'?'ltr':'rtl';
+  document.querySelectorAll('[data-en]').forEach(e=>{if(!('fa' in e.dataset))e.dataset.fa=e.innerHTML;e.innerHTML=l==='en'?e.dataset.en:e.dataset.fa});
+  document.querySelectorAll('[data-ph-en]').forEach(e=>{if(!e.dataset.phfa)e.dataset.phfa=e.placeholder;e.placeholder=l==='en'?e.dataset.phEn:e.dataset.phfa});
+  document.title=tr('مرکز راهنمای پسته‌بازار','Pesteh-Bazar Guide Center');$('lang').textContent=l==='en'?'فارسی':'English';modeLabel();
+  $('ipr').innerHTML='';$('ipo').innerHTML='';$('sr').style.display='none';
+  arch();faq();gloss();relRender();leg();
+  if(!init)try{localStorage.setItem('hublang',l)}catch(e){}
+}
+$('lang').onclick=()=>setLang(lang==='en'?'fa':'en');
+function leg(){$('leg').innerHTML=Object.keys(COL).map(g=>`<span><i style="background:var(${COL[g]})"></i>${gn(g)}</span>`).join('')}
 
 function arch(){
-  const L=[['android','📱','اپ اندروید','برنامه‌ی موبایل'],['windows','🖥','اپ ویندوز','نسخه‌ی دسکتاپ؛ قفل برنامه و مجوز امضادار'],['web','🌐','نسخه‌ی وب','در مرورگر'],['backend','⚙️','سرور (PHP)','مغز برنامه؛ همه‌ی منطق و دسترسی به داده'],['db','🗄','جدول دیتابیس','محل نگهداری داده‌ها'],['admin','🛠','پنل ادمین','مدیریت مشتریان و اشتراک‌ها']];
-  $('arch').innerHTML=L.map(([g,e,t,d])=>`<div class="box" style="--c:var(${COL[g]})"><b>${e} ${cnt(g)}</b>${t}<span>${d}<span class="t"> · فایل</span></span></div>`).join('');
-  $('meta').textContent=`${G.nodes.length-cnt('db')-cnt('infra')} فایل · ${G.links.length} اتصال · آخرین تحلیل: ${new Date(G.generated*1000).toLocaleString('fa-IR')}`;
+  const L=[['android','📱',['برنامه‌ی موبایل','The mobile app']],['windows','🖥',['نسخه‌ی دسکتاپ؛ قفل برنامه و مجوز امضادار','Desktop version; app lock and signed license']],['web','🌐',['در مرورگر','In the browser']],['backend','⚙️',['مغز برنامه؛ همه‌ی منطق و دسترسی به داده','The brain: all logic and data access']],['db','🗄',['محل نگهداری داده‌ها','Where the data is stored']],['admin','🛠',['مدیریت مشتریان و اشتراک‌ها','Manage customers and subscriptions']]];
+  $('arch').innerHTML=L.map(([g,e,d])=>`<div class="box" style="--c:var(${COL[g]})"><b>${e} ${cnt(g)}</b>${gn(g)==='جدول'?'جدول دیتابیس':g==='db'?'Database tables':gn(g)}<span>${tr(d[0],d[1])}</span></div>`).join('');
+  $('meta').textContent=tr(`${G.nodes.length-cnt('db')-cnt('infra')} فایل · ${G.links.length} اتصال · آخرین تحلیل: ${new Date(G.generated*1000).toLocaleString('fa-IR')}`,`${G.nodes.length-cnt('db')-cnt('infra')} files · ${G.links.length} connections · last analysis: ${new Date(G.generated*1000).toLocaleString('en-GB')}`);
 }
 
 function impact(id){const seen=new Set([id]),q=[id];while(q.length){const x=q.shift();for(const y of rev[x]||[])if(!seen.has(y)){seen.add(y);q.push(y)}}seen.delete(id);return [...seen]}
-const lvl=n=>n===0?['بدون وابسته','ok','هیچ فایلی به این وابسته نیست؛ تغییرش پرخطر نیست.']:n<=5?['کم','low','تعداد کمی فایل تحت تأثیرند؛ یک بررسی سریع کافی است.']:n<=30?['متوسط','mid','چند بخش تحت تأثیرند؛ بعد از تغییر، قابلیت‌های فهرست‌شده را تست کنید.']:['زیاد','high','بخش بزرگی از پروژه به این وابسته است؛ با احتیاط و تست کامل تغییر دهید.'];
+const lvl=n=>n===0?[tr('بدون وابسته','None'),'ok',tr('هیچ فایلی به این وابسته نیست؛ تغییرش پرخطر نیست.','Nothing depends on this; changing it is low-risk.')]:n<=5?[tr('کم','Low'),'low',tr('تعداد کمی فایل تحت تأثیرند؛ یک بررسی سریع کافی است.','Few files are affected; a quick check is enough.')]:n<=30?[tr('متوسط','Medium'),'mid',tr('چند بخش تحت تأثیرند؛ بعد از تغییر، قابلیت‌های فهرست‌شده را تست کنید.','Several parts are affected; test the listed features after changing.')]:[tr('زیاد','High'),'high',tr('بخش بزرگی از پروژه به این وابسته است؛ با احتیاط و تست کامل تغییر دهید.','A large part of the project depends on this; change with care and full testing.')];
 function showImpact(id){
   const n=N.get(id),dep=impact(id).map(i=>N.get(i)),by={};dep.forEach(x=>by[x.group]=(by[x.group]||0)+1);
   const feats=[...new Set(dep.map(x=>x.k).filter(k=>k&&!['common','other'].includes(k)))],[nm,cls,msg]=lvl(dep.length);
   const direct=(rev[id]||[]).map(i=>N.get(i)),tabs=(fwd[id]||[]).map(i=>N.get(i)).filter(x=>x.group==='db');
-  const twin=n.shared?`<p>⚠ این فایل در اندروید و ویندوز هر دو هست${n.shared==='diff'?' و <b style="color:var(--bad)">دو نسخه با هم فرق دارند</b>':''}؛ تغییر را در هر دو ریپو اعمال کنید.</p>`:'';
+  const split=Object.entries(by).map(([g,c])=>`${gn(g)} ${c}`).join(lang==='en'?', ':'، ');
+  const twin=n.shared?`<p>⚠ ${tr('این فایل در اندروید و ویندوز هر دو هست','This file exists in both Android and Windows')}${n.shared==='diff'?tr(' و <b style="color:var(--bad)">دو نسخه با هم فرق دارند</b>',' and <b style="color:var(--bad)">the two copies differ</b>'):''}${tr('؛ تغییر را در هر دو ریپو اعمال کنید.'," — apply the change in both repos.")}</p>`:'';
   $('ipr').innerHTML='';$('ip').value=n.label;
   $('ipo').innerHTML=`<div class="box"><b>${esc(n.label)}</b> <span class="en" style="display:inline">${esc(n.path||'')}</span><br>
-   سطح اثر: <span class="lvl ${cls}">${nm}</span> — ${msg}
-   <p>${dep.length?`روی <b>${dep.length}</b> فایل اثر می‌گذارد: ${direct.length} مستقیم و ${dep.length-direct.length} غیرمستقیم (${Object.entries(by).map(([g,c])=>`${GN[g]} ${c}`).join('، ')}).`:''}</p>${twin}
-   ${feats.length?`<div><b>قابلیت‌هایی که باید تست شوند:</b><br>${feats.slice(0,14).map(fchip).join('')}</div>`:''}
-   ${tabs.length?`<div style="margin-top:6px"><b>جدول‌هایی که مستقیم به آن‌ها دست می‌زند:</b><br>${tabs.map(lnk).join('')}</div>`:''}
-   ${direct.length?`<div style="margin-top:6px"><b>وابسته‌های مستقیم (${direct.length}):</b><br>${direct.slice(0,16).map(lnk).join('')}${direct.length>16?' …':''}</div>`:''}</div>`;
+   ${tr('سطح اثر','Impact level')}: <span class="lvl ${cls}">${nm}</span> — ${msg}
+   <p>${dep.length?tr(`روی <b>${dep.length}</b> فایل اثر می‌گذارد: ${direct.length} مستقیم و ${dep.length-direct.length} غیرمستقیم (${split}).`,`Affects <b>${dep.length}</b> files: ${direct.length} directly and ${dep.length-direct.length} indirectly (${split}).`):''}</p>${twin}
+   ${feats.length?`<div><b>${tr('قابلیت‌هایی که باید تست شوند','Features to test')}:</b><br>${feats.slice(0,14).map(fchip).join('')}</div>`:''}
+   ${tabs.length?`<div style="margin-top:6px"><b>${tr('جدول‌هایی که مستقیم به آن‌ها دست می‌زند','Tables it touches directly')}:</b><br>${tabs.map(lnk).join('')}</div>`:''}
+   ${direct.length?`<div style="margin-top:6px"><b>${tr('وابسته‌های مستقیم','Direct dependents')} (${direct.length}):</b><br>${direct.slice(0,16).map(lnk).join('')}${direct.length>16?' …':''}</div>`:''}</div>`;
 }
 $('ip').oninput=()=>{const q=$('ip').value.trim().toLowerCase();if(!q||!G){$('ipr').innerHTML='';return}
   const m=[...new Map(G.nodes.filter(n=>n.group!=='infra'&&n.label.toLowerCase().includes(q)).sort(rank(q)).map(n=>[n.label+n.group,n])).values()].slice(0,10);
-  $('ipr').innerHTML=m.map(n=>`<button data-i="${esc(n.id)}">${esc(n.label)} <small class="hint">${GN[n.group]}</small></button>`).join('')||'<span class="hint">چیزی پیدا نشد</span>';
+  $('ipr').innerHTML=m.map(n=>`<button data-i="${esc(n.id)}">${esc(n.label)} <small class="hint">${gn(n.group)}</small></button>`).join('')||`<span class="hint">${tr('چیزی پیدا نشد','Nothing found')}</span>`;
   $('ipr').querySelectorAll('button').forEach(b=>b.onclick=()=>showImpact(b.dataset.i))};
 
 function faq(){
-  const files=G.nodes.filter(n=>!['db','infra'].includes(n.group)),inn={};
-  G.links.forEach(l=>{if(USE.has(l.kind))inn[l.target]=(inn[l.target]||0)+1});
-  const fresh=files.filter(n=>n.added>CUT),diff=files.filter(n=>n.group==='android'&&n.shared==='diff'),unused=files.filter(n=>n.group==='backend'&&!inn[n.id]);
-  const hubs=files.filter(n=>n.group!=='windows').sort((a,b)=>(inn[b.id]||0)-(inn[a.id]||0)).slice(0,8);
-  const tabs=G.nodes.filter(n=>n.group==='db').sort((a,b)=>(inn[b.id]||0)-(inn[a.id]||0)).slice(0,6);
+  const files=G.nodes.filter(n=>!['db','infra'].includes(n.group)),inn={};G.links.forEach(l=>{if(USE.has(l.kind))inn[l.target]=(inn[l.target]||0)+1});
+  const fresh=files.filter(n=>n.added>CUT),diff=files.filter(n=>n.group==='android'&&n.shared==='diff'),same=files.filter(n=>n.shared==='same'&&n.group==='android').length,unused=files.filter(n=>n.group==='backend'&&!inn[n.id]);
+  const hubs=files.filter(n=>n.group!=='windows').sort((a,b)=>(inn[b.id]||0)-(inn[a.id]||0)).slice(0,8),tabs=G.nodes.filter(n=>n.group==='db').sort((a,b)=>(inn[b.id]||0)-(inn[a.id]||0)).slice(0,6);
+  const c=(n)=>`<span class="chip">${esc(n.label)} · ${inn[n.id]||0}</span>`;
   const Q=[
-   ['چه چیزی تازه اضافه یا عوض شده؟',fresh.length?`${fresh.length} فایل در ۷ روز اخیر اضافه شده:<br>${fresh.slice(0,14).map(n=>`${lnk(n)}`).join('')}${fresh.length>14?' …':''}<p class="hint">در گراف زنده با رنگ زرد دیده می‌شوند.</p>`:'در ۷ روز گذشته فایل جدیدی ثبت نشده است.'],
-   ['اپ چطور با سرور حرف می‌زند؟','هر سه نسخه یک پیام JSON به دروازه‌ی مشترک سرور (<span class="en" style="display:inline">app.php</span>) می‌فرستند که شامل شماره‌ی کاربر، توکن ورود، نام یک «اکشن» و داده‌هاست. سرور جواب JSON برمی‌گرداند. پس برای فهمیدن اینکه یک صفحه‌ی اپ به کدام فایل سرور می‌رسد، در گراف زنده خط نارنجی را دنبال کنید.'],
-   ['ویندوز و اندروید چه فرقی دارند؟',`بیشتر کد مشترک است (${files.filter(n=>n.shared==='same'&&n.group==='android').length} فایل یکسان). ولی ${diff.length} فایل با هم فرق دارند. چند ویژگی هم فقط ویندوز دارد، مثل قفل اختیاری برنامه با رمز و مجوز امضادار اشتراک.<div class="tb" style="margin-top:6px">${diff.slice(0,18).map(lnk).join('')}${diff.length>18?' …':''}</div><p class="hint">برای فهرست کامل، سطح را روی «فنی» بگذارید یا در نقشه‌ی قابلیت‌ها قرمزها را ببینید.</p>`],
-   ['کدام فایل‌ها حساس‌اند و تغییرشان پرخطر است؟','فایل‌هایی که بیشترین وابسته را دارند:<br>'+hubs.map(n=>`<span class="chip">${esc(n.label)} · ${inn[n.id]||0}</span>`).join('')+'<p class="hint">قبل از تغییر هر کدام از «تحلیل اثر» پایین همین صفحه استفاده کنید.</p>'],
-   ['کدام جدول‌های دیتابیس مهم‌ترند؟','پرمصرف‌ترین جدول‌ها (تعداد فایل‌های سروری که به آن‌ها دست می‌زنند):<br>'+tabs.map(n=>`<span class="chip">${esc(n.label)} · ${inn[n.id]||0}</span>`).join('')+'<p class="hint">تغییر ساختار این جدول‌ها باید با برنامه‌ریزی و پشتیبان‌گیری انجام شود.</p>'],
-   ['کدام فایل‌های سرور احتمالاً بلااستفاده‌اند؟',`${unused.length} فایل هیچ کدی که صدایشان بزند ندارند. بعضی ممکن است از بیرون (زمان‌بندی خودکار یا وب‌هوک) فراخوانی شوند، پس قبل از حذف بررسی کنید.<div class="tb" style="margin-top:6px">${unused.map(lnk).join('')}</div>`],
-   ['چطور بفهمم یک قابلیت کجا پیاده‌سازی شده؟','در <a href="map.html">نقشه‌ی قابلیت‌ها</a> قابلیت را باز کنید؛ فایل‌های اپ، وب، سرور و جدول‌های همان قابلیت زیر هم نوشته شده‌اند و هر فایل توضیح فارسی دارد.'],
-   ['این اطلاعات هر چند وقت به‌روز می‌شود؟','هر ۱۵ دقیقه یک بار خودکار (GitHub Actions) و فایل‌های جدید با برچسب «تازه» نشان داده می‌شوند. اگر عجله دارید، در ریپوی نقشه Run workflow را بزنید.']];
+   [tr('چه چیزی تازه اضافه یا عوض شده؟','What is new or changed?'),fresh.length?tr(`${fresh.length} فایل در ۷ روز اخیر اضافه شده:`,`${fresh.length} files were added in the last 7 days:`)+`<br>${fresh.slice(0,14).map(lnk).join('')}${fresh.length>14?' …':''}<p class="hint">${tr('در گراف زنده با رنگ زرد دیده می‌شوند.','They appear in yellow in the live graph.')}</p>`:tr('در ۷ روز گذشته فایل جدیدی ثبت نشده است.','No new files in the last 7 days.')],
+   [tr('اپ چطور با سرور حرف می‌زند؟','How does the app talk to the server?'),tr('هر سه نسخه یک پیام JSON به دروازه‌ی مشترک سرور (<span class="en" style="display:inline">app.php</span>) می‌فرستند که شامل شماره‌ی کاربر، توکن ورود، نام یک «اکشن» و داده‌هاست. سرور جواب JSON برمی‌گرداند. برای فهمیدن اینکه یک صفحه‌ی اپ به کدام فایل سرور می‌رسد، در گراف زنده خط نارنجی را دنبال کنید.','All three versions send a JSON message to the server’s shared gateway (<span class="en" style="display:inline">app.php</span>) containing the user’s phone number, a login token, an “action” name and the data. The server replies with JSON. To see which server file a screen reaches, follow the orange line in the live graph.')],
+   [tr('ویندوز و اندروید چه فرقی دارند؟','How do Windows and Android differ?'),tr(`بیشتر کد مشترک است (${same} فایل یکسان)، ولی ${diff.length} فایل با هم فرق دارند. چند ویژگی هم فقط ویندوز دارد، مثل قفل اختیاری برنامه با رمز و مجوز امضادار اشتراک.`,`Most code is shared (${same} identical files), but ${diff.length} files differ. A few things exist only on Windows, such as the optional app lock and the signed license.`)+`<div class="tb" style="margin-top:6px">${diff.slice(0,18).map(lnk).join('')}${diff.length>18?' …':''}</div><p class="hint">${tr('برای فهرست کامل، سطح را روی «فنی» بگذارید.','Switch the level to “Technical” for the full list.')}</p>`],
+   [tr('کدام فایل‌ها حساس‌اند و تغییرشان پرخطر است؟','Which files are sensitive (risky to change)?'),tr('فایل‌هایی که بیشترین وابسته را دارند:','Files with the most dependents:')+'<br>'+hubs.map(c).join('')+`<p class="hint">${tr('قبل از تغییر هر کدام از «تحلیل اثر» پایین همین صفحه استفاده کنید.','Use the Impact analysis below before changing any of them.')}</p>`],
+   [tr('کدام جدول‌های دیتابیس مهم‌ترند؟','Which database tables matter most?'),tr('پرمصرف‌ترین جدول‌ها (تعداد فایل‌های سروری که به آن‌ها دست می‌زنند):','Most used tables (number of server files touching them):')+'<br>'+tabs.map(c).join('')+`<p class="hint">${tr('تغییر ساختار این جدول‌ها باید با برنامه‌ریزی و پشتیبان‌گیری انجام شود.','Changing these tables’ structure needs planning and a backup.')}</p>`],
+   [tr('کدام فایل‌های سرور احتمالاً بلااستفاده‌اند؟','Which server files look unused?'),tr(`${unused.length} فایل هیچ کدی که صدایشان بزند ندارند. بعضی ممکن است از بیرون (زمان‌بندی خودکار یا وب‌هوک) فراخوانی شوند، پس قبل از حذف بررسی کنید.`,`${unused.length} files have no code calling them. Some may be called from outside (scheduled jobs or webhooks), so check before deleting.`)+`<div class="tb" style="margin-top:6px">${unused.map(lnk).join('')}</div>`],
+   [tr('چطور بفهمم یک قابلیت کجا پیاده‌سازی شده؟','How do I find where a feature is implemented?'),tr('در <a href="map.html">نقشه‌ی قابلیت‌ها</a> قابلیت را باز کنید؛ فایل‌های اپ، وب، سرور و جدول‌های همان قابلیت زیر هم نوشته شده‌اند و هر فایل توضیح فارسی دارد.','Open the <a href="map.html">Feature map</a> and pick a feature; the app, web and server files and tables of that feature are listed together, each with a short description (descriptions are in Persian).')],
+   [tr('این اطلاعات هر چند وقت به‌روز می‌شود؟','How often is this updated?'),tr('هر ۱۵ دقیقه یک بار خودکار (GitHub Actions) و فایل‌های جدید با برچسب «تازه» نشان داده می‌شوند. اگر عجله دارید، در ریپوی نقشه Run workflow را بزنید.','Automatically every 15 minutes (GitHub Actions); new files get a “new” tag. In a hurry? Run the workflow manually in the map repo.')]];
   $('faqs').innerHTML=Q.map(([q,a],i)=>`<details class="q"${i===0?' open':''}><summary>${q}</summary><div>${a}</div></details>`).join('');
 }
-function gloss(){$('gl').innerHTML=GL.map(([t,d],i)=>`<dt id="g${i}">${t}</dt><dd>${d}</dd>`).join('')}
+function gloss(){$('gl').innerHTML=GL.map((g,i)=>{const [t,d]=lang==='en'?GLEN[i]:g;return `<dt id="g${i}">${t}</dt><dd>${d}</dd>`}).join('')}
+
+function relRender(){
+  const tot=k=>Object.values(REL.dep[k]||{}).reduce((a,b)=>a+b,0)+Object.values(REL.by[k]||{}).reduce((a,b)=>a+b,0);
+  const top=Object.keys(F).filter(k=>!['common','other'].includes(k)).sort((a,b)=>tot(b)-tot(a)).slice(0,16);if(!top.includes(relK)&&F[relK]==null)relK=top[0];
+  $('picks').innerHTML=top.map(k=>`<button class="chip" style="${k===relK?'border-color:var(--new)':''}" data-k="${k}">${esc(fnm(k))}</button>`).join('');
+  const col=(o,c,ttl)=>{const e=Object.entries(o||{}).sort((a,b)=>b[1]-a[1]).slice(0,10),m=e[0]?e[0][1]:1;
+    return `<div class="box"><h4>${ttl}</h4>${e.map(([k,n])=>`<button class="ri" style="--c:var(${c})" data-k="${k}"><i style="width:${n/m*100}%"></i><span><b>${esc(fnm(k))}</b><small>${n}</small></span></button>`).join('')||'<span class="hint">—</span>'}</div>`};
+  const f=F[relK]||[],sz=new Set(f.map(n=>n.path)).size;
+  $('relv').innerHTML=col(REL.by[relK],'--backend',tr('⬇ این‌ها از آن استفاده می‌کنند','⬇ Used by'))+
+   `<div class="box mid"><b style="font-size:16px">${esc(fnm(relK))}</b><div class="en">${relK} · ${sz} ${tr('فایل','files')}</div>${lang==='fa'&&DESCR[relK]?`<p>${esc(DESCR[relK])}</p>`:''}<p><a href="map.html#${relK}">${tr('باز کردن در نقشه‌ی قابلیت‌ها ←','Open in the Feature map →')}</a></p></div>`+
+   col(REL.dep[relK],'--android',tr('⬇ به این‌ها وابسته است','⬇ Depends on'));
+  document.querySelectorAll('#picks [data-k],#relv .ri').forEach(b=>b.onclick=()=>{relK=b.dataset.k;relRender()});
+}
 
 // جستجوی سراسری
 $('q').oninput=()=>{const q=$('q').value.trim().toLowerCase(),box=$('sr');if(!q||!G){box.style.display='none';return}
-  const R=[];Object.keys(F).forEach(k=>{if(fa(k).includes(q)||k.includes(q)||(DESCR[k]||'').includes(q))R.push(['🧩 قابلیت: '+fa(k),()=>location.href='map.html#'+k])});
-  GL.forEach(([t,d],i)=>{if(t.includes(q)||d.includes(q))R.push(['📖 اصطلاح: '+t,()=>$('g'+i).scrollIntoView()])});
-  [...new Map(G.nodes.filter(n=>n.group!=='infra'&&n.label.toLowerCase().includes(q)).sort(rank(q)).map(n=>[n.label,n])).values()].slice(0,8).forEach(n=>R.push(['📄 '+n.label+' ('+GN[n.group]+') — تحلیل اثر',()=>{showImpact(n.id);$('impact').scrollIntoView()}]));
+  const R=[];Object.keys(F).forEach(k=>{if(fnm(k).toLowerCase().includes(q)||k.includes(q)||(lang==='fa'&&(DESCR[k]||'').includes(q)))R.push([tr('🧩 قابلیت: ','🧩 Feature: ')+fnm(k),()=>location.href='map.html#'+k])});
+  GL.forEach((g,i)=>{const [t,d]=lang==='en'?GLEN[i]:g;if(t.toLowerCase().includes(q)||d.toLowerCase().includes(q))R.push([tr('📖 اصطلاح: ','📖 Term: ')+t,()=>$('g'+i).scrollIntoView()])});
+  [...new Map(G.nodes.filter(n=>n.group!=='infra'&&n.label.toLowerCase().includes(q)).sort(rank(q)).map(n=>[n.label,n])).values()].slice(0,8).forEach(n=>R.push(['📄 '+n.label+' ('+gn(n.group)+') — '+tr('تحلیل اثر','impact analysis'),()=>{showImpact(n.id);$('impact').scrollIntoView()}]));
   box.innerHTML='';R.slice(0,16).forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{box.style.display='none';f()};box.appendChild(b)});
-  if(!R.length)box.innerHTML='<small>چیزی پیدا نشد</small>';box.style.display='block'};
+  if(!R.length)box.innerHTML=`<small>${tr('چیزی پیدا نشد','Nothing found')}</small>`;box.style.top=(document.querySelector('header').getBoundingClientRect().bottom+4)+'px';box.style.display='block'};
 document.addEventListener('click',e=>{if(!e.target.closest('#sr,#q'))$('sr').style.display='none'});
-$('mode').onclick=()=>{const t=document.body.classList.toggle('tech');$('mode').textContent='سطح: '+(t?'فنی':'ساده');try{localStorage.setItem('hubmode',t?'t':'s')}catch(e){}};
-try{if(localStorage.getItem('hubmode')==='t')$('mode').click()}catch(e){}
+function modeLabel(){const t=document.body.classList.contains('tech');$('mode').textContent=tr('سطح: ','Level: ')+(t?tr('فنی','Technical'):tr('ساده','Simple'))}
+$('mode').onclick=()=>{const t=document.body.classList.toggle('tech');modeLabel();try{localStorage.setItem('hubmode',t?'t':'s')}catch(e){}};
+try{if(localStorage.getItem('hubmode')==='t')document.body.classList.add('tech')}catch(e){}
+
+// تور راهنما
+const TOUR=[
+ ['#about',['خوش آمدید 👋','اینجا یک نگاه کلی به پروژه می‌بینید: برنامه چیست و از چه بخش‌هایی ساخته شده.'],['Welcome 👋','Here is the big picture: what the app is and what it is made of.']],
+ ['#arch',['شش بخش اصلی','هر کادر یکی از بخش‌های پروژه است و عدد داخلش تعداد فایل (یا جدول) آن بخش است.'],['Six main parts','Each box is a part of the project; the number is its file (or table) count.']],
+ ['#start',['نقش خودتان را انتخاب کنید','برای هر نقش، کوتاه‌ترین مسیر یادگیری پیشنهاد شده است.'],['Choose your role','Each role gets the shortest learning path.']],
+ ['#faq',['پاسخ پرسش‌های رایج','این پاسخ‌ها از داده‌ی زنده‌ی پروژه محاسبه می‌شوند، نه متن ثابت.'],['Common questions, answered','These answers are computed from live project data, not static text.']],
+ ['#rel',['ارتباط قابلیت‌ها','یک قابلیت را انتخاب کنید تا ببینید به چه چیزی وابسته است و چه چیزی به آن وابسته است.'],['How features connect','Pick a feature to see what it needs and what needs it.']],
+ ['#impact',['قبل از تغییر، اثرش را ببینید','اسم فایل یا جدول را بنویسید تا بخش‌های تحت تأثیر و قابلیت‌هایی که باید تست شوند را ببینید.'],['See the impact before you change','Type a file or table name to see affected parts and what to test.']],
+ ['#gloss',['اصطلاحی را نمی‌دانید؟','واژه‌نامه اصطلاحات را توضیح می‌دهد و جستجوی بالای صفحه داخل آن هم می‌گردد.'],['Don’t know a term?','The glossary explains the terms, and the search box at the top searches it too.']],
+ ['header',['صفحه‌های دیگر','«قابلیت‌ها» برای جزئیات هر قابلیت، «گراف زنده» برای دیدن اتصال‌ها و «تحلیل» برای شاخص‌های کیفیت. دکمه‌های «سطح» و «English» هم همین‌جاست.'],['More pages','“Features” for detail on each feature, “Live graph” for connections, “Analysis” for quality metrics. The Level and language buttons are here too.']]];
+let ti=-1;
+function startTour(){ti=0;$('tour').style.display='block';tstep()}
+function tstep(){document.querySelectorAll('.spot').forEach(e=>e.classList.remove('spot'));if(ti<0||ti>=TOUR.length)return endTour();
+  const [sel,fa_,en_]=TOUR[ti],el=document.querySelector(sel);el.classList.add('spot');el.style.scrollMarginTop=(document.querySelector('header').offsetHeight+12)+'px';el.scrollIntoView({block:'start',behavior:'smooth'});
+  const t=lang==='en'?en_:fa_;$('tt').textContent=t[0];$('tx').textContent=t[1];$('tn').textContent=(ti+1)+' / '+TOUR.length;
+  $('tp').textContent=tr('قبلی','Back');$('tp').style.visibility=ti?'visible':'hidden';$('tx2').textContent=tr('رد کردن','Skip');$('tg').textContent=ti===TOUR.length-1?tr('پایان','Done'):tr('بعدی','Next')}
+function endTour(){document.querySelectorAll('.spot').forEach(e=>e.classList.remove('spot'));$('tour').style.display='none';ti=-1;try{localStorage.setItem('hubtour','1')}catch(e){}window.scrollTo({top:0,behavior:'smooth'})}
+$('tg').onclick=()=>{ti++;tstep()};$('tp').onclick=()=>{ti--;tstep()};$('tx2').onclick=endTour;$('tourbtn').onclick=startTour;
+addEventListener('keydown',e=>{if(ti<0)return;if(e.key==='Escape')endTour();if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ti+=((e.key==='ArrowLeft')===(lang==='fa'))?1:-1;tstep()}});
 </script>
 </body>
 </html>
