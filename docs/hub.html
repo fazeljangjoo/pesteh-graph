@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مرکز راهنمای پسته‌بازار</title>
+<style>
+:root{--bg:#14181f;--panel:#1c222c;--fg:#e8ebf0;--mut:#8a94a6;--line:#3a4558;--new:#ffd23f;--ok:#2ecc71;--bad:#ff6b6b;--android:#3ddc84;--windows:#4aa3ff;--web:#ff9f43;--backend:#b388ff;--admin:#ff6b9d;--db:#8a94a6}
+@media (prefers-color-scheme:light){:root{--bg:#f4f5f7;--panel:#fff;--fg:#1b2230;--mut:#5b6678;--line:#b8c0cc;--new:#d98e00;--ok:#1e9e55;--bad:#d9534f}}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.9 Tahoma,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+header b{font-size:16px}.hint{color:var(--mut);font-size:12px}
+.btn{background:var(--new);color:#111;border-radius:6px;padding:2px 10px;text-decoration:none;font-weight:bold;font-size:13px;border:0;font-family:inherit;cursor:pointer}
+.btn.alt{background:none;color:var(--fg);border:1px solid var(--line)}
+#q{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:5px 10px;flex:1 1 200px;max-width:340px;min-width:0;font:inherit;font-size:13px}
+#sr{position:fixed;inset-inline:12px;top:56px;z-index:30;max-width:520px;max-height:60vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;display:none;padding:6px}
+#sr button{all:unset;display:block;width:100%;box-sizing:border-box;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:13px}#sr button:hover{background:var(--bg)}#sr small{color:var(--mut)}
+main{max-width:980px;margin:0 auto;padding:10px 14px 60px}
+section{margin:30px 0}h1{font-size:24px;margin:10px 0 4px}h2{font-size:19px;margin:0 0 4px}.sub{color:var(--mut);margin:0 0 12px;font-size:13px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.arch{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.arch .box{border-top:4px solid var(--c);text-align:center;padding:10px 8px}.arch b{font-size:22px;display:block;line-height:1.3}.arch span{font-size:12px;color:var(--mut);display:block;line-height:1.6}
+.flow{text-align:center;color:var(--mut);font-size:13px;margin:2px 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.cards h3{margin:0 0 4px;font-size:16px}.cards ul{margin:6px 0 0;padding-inline-start:18px}.cards li{margin:3px 0;font-size:14px}
+a{color:var(--new)}details.q{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:7px 0;padding:8px 14px}
+details.q summary{cursor:pointer;font-weight:bold}details.q[open] summary{margin-bottom:6px}
+.chip{display:inline-block;margin:2px 0 2px 5px;padding:0 10px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg);font-size:12px;text-decoration:none;cursor:pointer;font-family:inherit}
+.en{direction:ltr;text-align:left;color:var(--mut);font-size:11px}
+#ip{width:100%;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit}
+#ipr button{all:unset;display:inline-block;margin:6px 0 0 6px;padding:1px 12px;border:1px solid var(--line);border-radius:12px;cursor:pointer;font-size:13px;background:var(--panel)}
+.lvl{display:inline-block;border-radius:8px;padding:0 12px;font-weight:bold;color:#111}.lvl.ok{background:var(--ok)}.lvl.low{background:#9be15d}.lvl.mid{background:var(--new)}.lvl.high{background:var(--bad)}
+dl{margin:0}dt{font-weight:bold;margin-top:10px}dd{margin:0;color:var(--mut)}
+.leg{display:flex;flex-wrap:wrap;gap:6px 18px}.leg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-inline-end:5px}
+.t,.tb{display:none!important}.tech .t{display:inline!important}.tech .tb{display:block!important}
+</style>
+</head>
+<body>
+<header>
+  <b>🏠 مرکز راهنما</b><small class="hint">v7</small>
+  <a class="btn" href="map.html?v=7">🧩 قابلیت‌ها</a><a class="btn" href="index.html?v=7">🕸 گراف زنده</a><a class="btn" href="stats.html?v=7">📊 تحلیل</a>
+  <input id="q" type="search" placeholder="جستجو در همه‌چیز: قابلیت، فایل، اصطلاح…" autocomplete="off">
+  <button class="btn alt" id="mode" title="تغییر سطح جزئیات">سطح: ساده</button>
+</header>
+<div id="sr"></div>
+<main>
+<section id="about">
+  <h1>پسته‌بازار چیست و از چه بخش‌هایی ساخته شده؟</h1>
+  <p>پسته‌بازار نرم‌افزار مدیریت <b>خرید، فروش، انبار، کارگاه و حسابداری پسته</b> است. سه نسخه دارد (اندروید، ویندوز و وب) که هر سه با <b>یک سرور مشترک</b> حرف می‌زنند و داده‌ها در یک دیتابیس نگهداری می‌شود.</p>
+  <div class="arch" id="arch"></div>
+  <p class="flow">نسخه‌های کاربری ⬇ همه‌ی درخواست‌ها از یک دروازه‌ی مشترک (<span class="en" style="display:inline">app.php</span>) می‌گذرد ⬇ سرور داده را در دیتابیس می‌خواند و می‌نویسد</p>
+  <p class="hint" id="meta"></p>
+</section>
+
+<section id="start">
+  <h2>از کجا شروع کنم؟</h2><p class="sub">بر اساس نقش خودتان یکی را انتخاب کنید.</p>
+  <div class="cards">
+    <div class="box"><h3>👔 مدیر یا مالک (غیر فنی)</h3><p class="hint">می‌خواهید بدانید برنامه چه می‌کند و چه چیزی تغییر کرده.</p><ul>
+      <li><a href="map.html">نقشه‌ی قابلیت‌ها</a>؛ هر قابلیت به زبان ساده توضیح داده شده</li>
+      <li><a href="#faq">«چه چیزی تازه تغییر کرده؟»</a></li><li><a href="#gloss">واژه‌نامه‌ی اصطلاحات</a></li></ul></div>
+    <div class="box"><h3>💻 برنامه‌نویس تازه‌وارد</h3><p class="hint">می‌خواهید بفهمید کد کجاست و چه به چه وصل است.</p><ul>
+      <li>ابتدا <a href="map.html">نقشه‌ی قابلیت‌ها</a> را باز کنید و قابلیت مورد نظر را انتخاب کنید</li>
+      <li>سپس <a href="index.html">گراف زنده</a> برای دیدن اتصال‌ها</li><li><a href="#impact">تحلیل اثر تغییر</a> قبل از دست‌زدن به هر فایل</li></ul></div>
+    <div class="box"><h3>🛠 مسئول فنی / معمار</h3><p class="hint">می‌خواهید کیفیت و ریسک را بسنجید.</p><ul>
+      <li><a href="stats.html">صفحه‌ی تحلیل</a>: حجم کد، هاب‌ها، چرخه‌ها، رشد</li>
+      <li><a href="#faq">فایل‌های متفاوت اندروید/ویندوز و بلااستفاده</a></li><li>سطح را روی «فنی» بگذارید</li></ul></div>
+  </div>
+</section>
+
+<section id="faq"><h2>پرسش‌های پرتکرار</h2><p class="sub">پاسخ‌ها از روی داده‌ی واقعی پروژه محاسبه می‌شوند و با هر به‌روزرسانی عوض می‌شوند.</p><div id="faqs"></div></section>
+
+<section id="impact">
+  <h2>اگر این فایل را عوض کنم چه می‌شود؟</h2>
+  <p class="sub">اسم یک فایل یا جدول را بنویسید؛ می‌بینید چه بخش‌هایی به آن وابسته‌اند و باید تست شوند.</p>
+  <input id="ip" type="search" placeholder="مثلاً: utils.dart یا purchases یا app.php" autocomplete="off">
+  <div id="ipr"></div><div id="ipo" style="margin-top:10px"></div>
+</section>
+
+<section id="gloss"><h2>واژه‌نامه</h2><p class="sub">اصطلاحات کسب‌وکار و فنی که در پروژه می‌بینید.</p><dl id="gl"></dl>
+  <p class="hint">این تعریف‌ها از روی کامنت‌های داخل کد نوشته شده‌اند؛ اگر جایی با برداشت شما فرق دارد اصلاحش کنید.</p></section>
+
+<section id="legend"><h2>راهنمای رنگ‌ها و نشانه‌ها</h2>
+  <div class="box"><div class="leg">
+    <span><i style="background:var(--android)"></i>اندروید</span><span><i style="background:var(--windows)"></i>ویندوز</span><span><i style="background:var(--web)"></i>وب</span>
+    <span><i style="background:var(--backend)"></i>سرور</span><span><i style="background:var(--admin)"></i>ادمین</span><span><i style="background:var(--db)"></i>دیتابیس</span></div>
+   <p style="margin:10px 0 0"><span style="color:var(--new)">●</span> زرد و چشمک‌زن = تازه (۷ روز اخیر) · <span style="color:var(--bad)">●</span> قرمز = فایل در اندروید و ویندوز متفاوت است یا مشکل سرور · خط نارنجی = تماس اپ با سرور · خط‌چین قرمز = دو نسخه از هم دور شده‌اند</p></div>
+</section>
+</main>
+
+<script src="shared.js"></script>
+<script>
+const $=id=>document.getElementById(id),USE=new Set(['import','require','api','sql']);
+const GN={android:'اندروید',windows:'ویندوز',web:'وب',backend:'سرور',admin:'ادمین',db:'جدول'},COL={android:'--android',windows:'--windows',web:'--web',backend:'--backend',admin:'--admin',db:'--db'};
+const GL=[
+['لات','یک دسته‌ی مشخص پسته که خریداری یا تولید شده و در انبار نگهداری می‌شود. هر لات کد و موجودی جدا دارد.'],
+['کارتکس','دفتر ورود و خروج یک لات (یا یک مالک): چه مقدار آمد، چه مقدار رفت و چقدر مانده است.'],
+['کوت‌ریزی / جداسازی','تقسیم یک لات به چند خروجی (مثلاً مغز، پوست، بدشکل) با ثبت مبدأ هر خروجی.'],
+['فراوری / برون‌سپاری','دادن لات به شخص دیگر برای عملیات؛ هزینه و دستمزد روی لات‌های خروجی تقسیم می‌شود.'],
+['خط شکست','خط عملیاتی که پسته را می‌شکند؛ هزینه‌ی لات مبدأ روی خروجی‌ها پخش می‌شود و «استخر هزینه» نام دارد.'],
+['اونس (درجه‌بندی)','درجه‌ی پسته بر اساس اندازه که برای هر لات ثبت می‌شود.'],
+['امانی','کالایی که مال دیگری است و در انبار ما می‌ماند (دریافتی)، یا مال ماست و پیش دیگری است (ارسالی).'],
+['طرف‌حساب','هر شخصی که با او خرید و فروش می‌کنید: فروشنده، خریدار یا دلال.'],
+['سررسید','تاریخ موعد پرداخت یا دریافت چک و اقساط. اپ نزدیک سررسید یادآوری می‌کند.'],
+['سند حسابداری','ثبت دوطرفه‌ی یک رویداد مالی (بدهکار و بستانکار). بیشترشان خودکار از خرید، فروش، چک و… ساخته می‌شوند.'],
+['سرفصل (گروه، کل، معین)','سه سطح درخت حساب‌ها؛ مثلاً گروه «دارایی»، کل «بانک» و معین «بانک ملی».'],
+['تفصیلی','بُعد اضافه‌ی حساب‌ها برای مشخص‌کردن مثلاً شخص، صندوق یا مرکز هزینه.'],
+['سال مالی','بازه‌ی شمسی که حساب‌ها در آن بسته می‌شود. بستن سال سند اختتامیه می‌سازد.'],
+['قفل دوره','اسناد تا یک تاریخ مشخص دیگر قابل ویرایش نیستند.'],
+['سند اصلاحی','برای اصلاح قیمت یا وزن یک سند قطعی‌شده بدون دست‌زدن به خود سند.'],
+['تسعیر ارز','به‌روزرسانی ارزش اسناد ارزی بر اساس نرخ جدید در پایان دوره.'],
+['پیش‌فاکتور','پیشنهاد قیمت برای مشتری. تا به فروش تبدیل نشود روی انبار و حسابداری اثری ندارد.'],
+['اعتبار اسنادی (LC)','روش پرداخت در فروش صادراتی با مهلت‌های مشخص؛ در برنامه فقط پیگیری می‌شود.'],
+['مغایرت بانکی','تطبیق صورت‌حساب بانک با ثبت‌های حسابداری حساب بانکی.'],
+['ممیزی (Audit)','فهرست اینکه چه کسی، کی، چه تغییری داده است.'],
+['نسخه‌ی سبز / طلایی','دو سطح محصول؛ طبق کدها «طلایی» قابلیت‌های حسابداری کامل را اضافه می‌کند و «سبز» پایه است.'],
+['پلن ریالی / ارزی','پلن ارزی علاوه بر ریال، خرید و فروش با ارز خارجی را هم پشتیبانی می‌کند.'],
+['آفلاین‌اول','اپ بدون اینترنت هم کار می‌کند و تغییرات را بعداً با سرور همگام می‌کند.'],
+['همگام‌سازی (Sync)','هماهنگ‌کردن داده‌ی دستگاه با سرور.'],
+['API / اکشن','پیام‌هایی که اپ به سرور می‌فرستد؛ هر پیام یک «اکشن» دارد مثل <span class="en" style="display:inline">accounts.list</span>.'],
+['وابستگی (import)','وقتی یک فایل از فایل دیگر استفاده می‌کند. در گراف با یک خط نشان داده می‌شود.'],
+['هاب','فایلی که تعداد زیادی فایل دیگر به آن وابسته‌اند؛ تغییرش پرخطر است.'],
+['چرخه‌ی وابستگی','وقتی چند فایل مستقیم یا غیرمستقیم به هم وابسته‌اند؛ تست و نگهداری را سخت می‌کند.']];
+
+let G,D={},N,rev={},fwd={},F={},CUT=Date.now()/1000-7*86400;
+Promise.all([fetch('graph.json').then(r=>r.json()),fetch('descriptions.json').then(r=>r.json()).catch(()=>({}))]).then(([g,d])=>{
+  G=g;D=d;N=new Map(G.nodes.map(n=>[n.id,n]));
+  const files=G.nodes.filter(n=>!['db','infra'].includes(n.group));assignFeatures(files);
+  files.forEach(n=>(F[n.k]??=[]).push(n));
+  G.links.forEach(l=>{if(USE.has(l.kind)){(rev[l.target]??=[]).push(l.source);(fwd[l.source]??=[]).push(l.target)}});
+  arch();faq();gloss();
+});
+const cnt=g=>G.nodes.filter(n=>n.group===g).length;
+const fa=k=>FA[k]||k;
+const rank=(q)=>(a,b)=>((a.label.toLowerCase()===q?0:a.label.toLowerCase().startsWith(q)?1:2)-(b.label.toLowerCase()===q?0:b.label.toLowerCase().startsWith(q)?1:2));
+const lnk=n=>`<span class="chip">${esc(n.label)}</span>`;
+const fchip=k=>`<a class="chip" href="map.html#${k}">${esc(fa(k))}</a>`;
+
+function arch(){
+  const L=[['android','📱','اپ اندروید','برنامه‌ی موبایل'],['windows','🖥','اپ ویندوز','نسخه‌ی دسکتاپ؛ قفل برنامه و مجوز امضادار'],['web','🌐','نسخه‌ی وب','در مرورگر'],['backend','⚙️','سرور (PHP)','مغز برنامه؛ همه‌ی منطق و دسترسی به داده'],['db','🗄','جدول دیتابیس','محل نگهداری داده‌ها'],['admin','🛠','پنل ادمین','مدیریت مشتریان و اشتراک‌ها']];
+  $('arch').innerHTML=L.map(([g,e,t,d])=>`<div class="box" style="--c:var(${COL[g]})"><b>${e} ${cnt(g)}</b>${t}<span>${d}<span class="t"> · فایل</span></span></div>`).join('');
+  $('meta').textContent=`${G.nodes.length-cnt('db')-cnt('infra')} فایل · ${G.links.length} اتصال · آخرین تحلیل: ${new Date(G.generated*1000).toLocaleString('fa-IR')}`;
+}
+
+function impact(id){const seen=new Set([id]),q=[id];while(q.length){const x=q.shift();for(const y of rev[x]||[])if(!seen.has(y)){seen.add(y);q.push(y)}}seen.delete(id);return [...seen]}
+const lvl=n=>n===0?['بدون وابسته','ok','هیچ فایلی به این وابسته نیست؛ تغییرش پرخطر نیست.']:n<=5?['کم','low','تعداد کمی فایل تحت تأثیرند؛ یک بررسی سریع کافی است.']:n<=30?['متوسط','mid','چند بخش تحت تأثیرند؛ بعد از تغییر، قابلیت‌های فهرست‌شده را تست کنید.']:['زیاد','high','بخش بزرگی از پروژه به این وابسته است؛ با احتیاط و تست کامل تغییر دهید.'];
+function showImpact(id){
+  const n=N.get(id),dep=impact(id).map(i=>N.get(i)),by={};dep.forEach(x=>by[x.group]=(by[x.group]||0)+1);
+  const feats=[...new Set(dep.map(x=>x.k).filter(k=>k&&!['common','other'].includes(k)))],[nm,cls,msg]=lvl(dep.length);
+  const direct=(rev[id]||[]).map(i=>N.get(i)),tabs=(fwd[id]||[]).map(i=>N.get(i)).filter(x=>x.group==='db');
+  const twin=n.shared?`<p>⚠ این فایل در اندروید و ویندوز هر دو هست${n.shared==='diff'?' و <b style="color:var(--bad)">دو نسخه با هم فرق دارند</b>':''}؛ تغییر را در هر دو ریپو اعمال کنید.</p>`:'';
+  $('ipr').innerHTML='';$('ip').value=n.label;
+  $('ipo').innerHTML=`<div class="box"><b>${esc(n.label)}</b> <span class="en" style="display:inline">${esc(n.path||'')}</span><br>
+   سطح اثر: <span class="lvl ${cls}">${nm}</span> — ${msg}
+   <p>${dep.length?`روی <b>${dep.length}</b> فایل اثر می‌گذارد: ${direct.length} مستقیم و ${dep.length-direct.length} غیرمستقیم (${Object.entries(by).map(([g,c])=>`${GN[g]} ${c}`).join('، ')}).`:''}</p>${twin}
+   ${feats.length?`<div><b>قابلیت‌هایی که باید تست شوند:</b><br>${feats.slice(0,14).map(fchip).join('')}</div>`:''}
+   ${tabs.length?`<div style="margin-top:6px"><b>جدول‌هایی که مستقیم به آن‌ها دست می‌زند:</b><br>${tabs.map(lnk).join('')}</div>`:''}
+   ${direct.length?`<div style="margin-top:6px"><b>وابسته‌های مستقیم (${direct.length}):</b><br>${direct.slice(0,16).map(lnk).join('')}${direct.length>16?' …':''}</div>`:''}</div>`;
+}
+$('ip').oninput=()=>{const q=$('ip').value.trim().toLowerCase();if(!q||!G){$('ipr').innerHTML='';return}
+  const m=[...new Map(G.nodes.filter(n=>n.group!=='infra'&&n.label.toLowerCase().includes(q)).sort(rank(q)).map(n=>[n.label+n.group,n])).values()].slice(0,10);
+  $('ipr').innerHTML=m.map(n=>`<button data-i="${esc(n.id)}">${esc(n.label)} <small class="hint">${GN[n.group]}</small></button>`).join('')||'<span class="hint">چیزی پیدا نشد</span>';
+  $('ipr').querySelectorAll('button').forEach(b=>b.onclick=()=>showImpact(b.dataset.i))};
+
+function faq(){
+  const files=G.nodes.filter(n=>!['db','infra'].includes(n.group)),inn={};
+  G.links.forEach(l=>{if(USE.has(l.kind))inn[l.target]=(inn[l.target]||0)+1});
+  const fresh=files.filter(n=>n.added>CUT),diff=files.filter(n=>n.group==='android'&&n.shared==='diff'),unused=files.filter(n=>n.group==='backend'&&!inn[n.id]);
+  const hubs=files.filter(n=>n.group!=='windows').sort((a,b)=>(inn[b.id]||0)-(inn[a.id]||0)).slice(0,8);
+  const tabs=G.nodes.filter(n=>n.group==='db').sort((a,b)=>(inn[b.id]||0)-(inn[a.id]||0)).slice(0,6);
+  const Q=[
+   ['چه چیزی تازه اضافه یا عوض شده؟',fresh.length?`${fresh.length} فایل در ۷ روز اخیر اضافه شده:<br>${fresh.slice(0,14).map(n=>`${lnk(n)}`).join('')}${fresh.length>14?' …':''}<p class="hint">در گراف زنده با رنگ زرد دیده می‌شوند.</p>`:'در ۷ روز گذشته فایل جدیدی ثبت نشده است.'],
+   ['اپ چطور با سرور حرف می‌زند؟','هر سه نسخه یک پیام JSON به دروازه‌ی مشترک سرور (<span class="en" style="display:inline">app.php</span>) می‌فرستند که شامل شماره‌ی کاربر، توکن ورود، نام یک «اکشن» و داده‌هاست. سرور جواب JSON برمی‌گرداند. پس برای فهمیدن اینکه یک صفحه‌ی اپ به کدام فایل سرور می‌رسد، در گراف زنده خط نارنجی را دنبال کنید.'],
+   ['ویندوز و اندروید چه فرقی دارند؟',`بیشتر کد مشترک است (${files.filter(n=>n.shared==='same'&&n.group==='android').length} فایل یکسان). ولی ${diff.length} فایل با هم فرق دارند. چند ویژگی هم فقط ویندوز دارد، مثل قفل اختیاری برنامه با رمز و مجوز امضادار اشتراک.<div class="tb" style="margin-top:6px">${diff.slice(0,18).map(lnk).join('')}${diff.length>18?' …':''}</div><p class="hint">برای فهرست کامل، سطح را روی «فنی» بگذارید یا در نقشه‌ی قابلیت‌ها قرمزها را ببینید.</p>`],
+   ['کدام فایل‌ها حساس‌اند و تغییرشان پرخطر است؟','فایل‌هایی که بیشترین وابسته را دارند:<br>'+hubs.map(n=>`<span class="chip">${esc(n.label)} · ${inn[n.id]||0}</span>`).join('')+'<p class="hint">قبل از تغییر هر کدام از «تحلیل اثر» پایین همین صفحه استفاده کنید.</p>'],
+   ['کدام جدول‌های دیتابیس مهم‌ترند؟','پرمصرف‌ترین جدول‌ها (تعداد فایل‌های سروری که به آن‌ها دست می‌زنند):<br>'+tabs.map(n=>`<span class="chip">${esc(n.label)} · ${inn[n.id]||0}</span>`).join('')+'<p class="hint">تغییر ساختار این جدول‌ها باید با برنامه‌ریزی و پشتیبان‌گیری انجام شود.</p>'],
+   ['کدام فایل‌های سرور احتمالاً بلااستفاده‌اند؟',`${unused.length} فایل هیچ کدی که صدایشان بزند ندارند. بعضی ممکن است از بیرون (زمان‌بندی خودکار یا وب‌هوک) فراخوانی شوند، پس قبل از حذف بررسی کنید.<div class="tb" style="margin-top:6px">${unused.map(lnk).join('')}</div>`],
+   ['چطور بفهمم یک قابلیت کجا پیاده‌سازی شده؟','در <a href="map.html">نقشه‌ی قابلیت‌ها</a> قابلیت را باز کنید؛ فایل‌های اپ، وب، سرور و جدول‌های همان قابلیت زیر هم نوشته شده‌اند و هر فایل توضیح فارسی دارد.'],
+   ['این اطلاعات هر چند وقت به‌روز می‌شود؟','هر ۱۵ دقیقه یک بار خودکار (GitHub Actions) و فایل‌های جدید با برچسب «تازه» نشان داده می‌شوند. اگر عجله دارید، در ریپوی نقشه Run workflow را بزنید.']];
+  $('faqs').innerHTML=Q.map(([q,a],i)=>`<details class="q"${i===0?' open':''}><summary>${q}</summary><div>${a}</div></details>`).join('');
+}
+function gloss(){$('gl').innerHTML=GL.map(([t,d],i)=>`<dt id="g${i}">${t}</dt><dd>${d}</dd>`).join('')}
+
+// جستجوی سراسری
+$('q').oninput=()=>{const q=$('q').value.trim().toLowerCase(),box=$('sr');if(!q||!G){box.style.display='none';return}
+  const R=[];Object.keys(F).forEach(k=>{if(fa(k).includes(q)||k.includes(q)||(DESCR[k]||'').includes(q))R.push(['🧩 قابلیت: '+fa(k),()=>location.href='map.html#'+k])});
+  GL.forEach(([t,d],i)=>{if(t.includes(q)||d.includes(q))R.push(['📖 اصطلاح: '+t,()=>$('g'+i).scrollIntoView()])});
+  [...new Map(G.nodes.filter(n=>n.group!=='infra'&&n.label.toLowerCase().includes(q)).sort(rank(q)).map(n=>[n.label,n])).values()].slice(0,8).forEach(n=>R.push(['📄 '+n.label+' ('+GN[n.group]+') — تحلیل اثر',()=>{showImpact(n.id);$('impact').scrollIntoView()}]));
+  box.innerHTML='';R.slice(0,16).forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{box.style.display='none';f()};box.appendChild(b)});
+  if(!R.length)box.innerHTML='<small>چیزی پیدا نشد</small>';box.style.display='block'};
+document.addEventListener('click',e=>{if(!e.target.closest('#sr,#q'))$('sr').style.display='none'});
+$('mode').onclick=()=>{const t=document.body.classList.toggle('tech');$('mode').textContent='سطح: '+(t?'فنی':'ساده');try{localStorage.setItem('hubmode',t?'t':'s')}catch(e){}};
+try{if(localStorage.getItem('hubmode')==='t')$('mode').click()}catch(e){}
+</script>
+</body>
+</html>
